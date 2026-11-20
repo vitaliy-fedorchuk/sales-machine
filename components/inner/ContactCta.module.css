@@ -1,0 +1,214 @@
+/*
+ * «3D-розліт» — порт кнопки d-86 з оригіналу: плашка з 8×4 шматків.
+ * При наведенні кожен шматок за 350 мс (outExpo) зсувається на свої --x/--y (% від розміру)
+ * і --z (до глядача або вглиб); шматки лишаються паралельними.
+ * Уся сітка нахиляється за курсором (GSAP у ContactCta.tsx), перспектива 1000px.
+ */
+.cta {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(560px, 100%);
+  min-height: 60px;
+  padding: 12px 20px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  perspective: 1000px;
+}
+
+.cta:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  transform-style: preserve-3d;
+}
+
+.piece {
+  background: var(--ink);
+  /* перекриття на пів пікселя, щоб у спокої між шматками не було щілин */
+  margin: -0.5px;
+  transition:
+    transform 0.35s cubic-bezier(0.19, 1, 0.22, 1),
+    background 0.6s ease;
+}
+
+/* Підпис — окремим шаром поверх сітки, як в оригіналі. */
+.label {
+  position: relative;
+  color: var(--btn-fg);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .cta:hover .piece,
+  .cta:focus-visible .piece {
+    transform: translate3d(var(--x), var(--y), var(--z));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .piece {
+    transition: background 0.6s ease;
+  }
+  .cta:hover .piece {
+    transform: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .label {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 479px) {
+  .label {
+    font-size: 16px;
+    letter-spacing: 2px;
+    line-height: 1.3;
+  }
+}
+
+/* ---------- попап ---------- */
+.dialog {
+  width: min(880px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 0;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  overflow: auto;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.55);
+}
+
+.dialog[open] {
+  animation: pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotateX(-12deg);
+  }
+}
+
+.box {
+  position: relative;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 40px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.text {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.action {
+  flex: 1 1 200px;
+  padding: 16px 20px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.action:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.close span {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  right: 6px;
+  height: 1px;
+  background: var(--ink);
+  transform: rotate(45deg);
+}
+
+.close span + span {
+  transform: rotate(-45deg);
+}
+
+@media (max-width: 767px) {
+  .box {
+    grid-template-columns: 1fr;
+  }
+  .photo {
+    height: 220px;
+  }
+  .body {
+    padding: 24px 20px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .text {
+    font-size: 18px;
+  }
+}

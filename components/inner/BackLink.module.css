@@ -1,0 +1,86 @@
+/* Стрілка: над контентом (z 5), під перемикачем теми й панеллю переходу. */
+.back {
+  position: fixed;
+  top: 20px;
+  left: 40px;
+  z-index: 5;
+  display: block;
+  padding: 6px;
+  margin: -6px;
+  text-decoration: none;
+}
+
+.arrow {
+  display: block;
+  fill: var(--arrow);
+  transition: fill 0.3s ease;
+}
+
+.back:hover .arrow,
+.back:focus-visible .arrow {
+  fill: var(--ink);
+}
+
+.back:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* Велике слово розділу — фон під контентом, одразу під стрілкою. */
+.word {
+  position: fixed;
+  top: 88px;
+  left: 40px;
+  z-index: 0;
+  color: var(--surface);
+  font-size: 160px;
+  font-weight: 500;
+  line-height: 1;
+  pointer-events: none;
+  transition: color 0.6s ease;
+}
+
+/* Наведення на «назад»: контент сторінки розмивається й відсувається вправо,
+   відкриваючи стрілку й велике слово — прев'ю повернення в меню. */
+@media (hover: hover) {
+  :global(body):has(.back:hover) :global(main[data-page-shift]) {
+    translate: 80px 0;
+    filter: blur(3px);
+  }
+  :global(body):has(.back:hover) .word {
+    color: var(--grey);
+  }
+}
+:global(body):has(.back:focus-visible) :global(main[data-page-shift]) {
+  translate: 80px 0;
+  filter: blur(3px);
+}
+
+@media (max-width: 991px) {
+  .back,
+  .word {
+    left: 10px;
+  }
+  .word {
+    font-size: 80px;
+  }
+}
+
+/* На телефоні — звичайний рядок над контентом, не фіксований. */
+@media (max-width: 479px) {
+  .back {
+    position: absolute;
+    top: 20px;
+    left: 52px;
+  }
+  .arrow {
+    width: 50px;
+    height: auto;
+  }
+  .word {
+    position: absolute;
+    top: 14px;
+    left: 114px;
+    font-size: 40px;
+  }
+}

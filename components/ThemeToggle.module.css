@@ -1,0 +1,60 @@
+.toggle {
+  position: fixed;
+  top: 18px;
+  /* 24px від краю ВІКНА, а не від скролбара: (100vw − 100%) = ширина скролбара,
+     тож перемикач стоїть на місці й на головній (без скролу), і на внутрішніх. */
+  right: calc(24px - (100vw - 100%));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 500 13px/1 var(--font-main), system-ui, sans-serif;
+  cursor: pointer;
+  transition: color 0.6s ease;
+}
+
+.toggle:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 4px;
+}
+
+/* Підпис — дія: у світлій темі «Тёмная тема», у темній «Светлая тема» (як у прототипі). */
+:global(html[data-theme="dark"]) .toDark,
+:global(html:not([data-theme="dark"])) .toLight {
+  display: none;
+}
+
+.sw {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  transition: border-color 0.6s ease;
+}
+
+.sw i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink);
+  transition: transform 0.45s cubic-bezier(0.6, 0, 0.2, 1), background 0.6s ease;
+}
+
+:global(html[data-theme="dark"]) .sw i {
+  transform: translateX(16px);
+}
+
+@media (max-width: 640px) {
+  .toggle {
+    top: 12px;
+    right: calc(14px - (100vw - 100%));
+  }
+}

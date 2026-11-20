@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Machine — спіраль A1, налаштування руху</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Manrope:wght@300..800&family=Montserrat:wght@300..800&family=Onest:wght@300..800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --ink:#181819; --mute:#8a8a8c; --line:#e6e6e6;
+    --panel-bg:rgba(255,255,255,.94); --panel-ink:#181819;
+  }
+  body.dark{ --bg:#0e0e0f; --ink:#f2f2f2; --mute:#7d7d80; --line:#2a2a2c; --panel-bg:rgba(20,20,21,.94); --panel-ink:#f2f2f2; }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:Inter,system-ui,sans-serif;transition:background .3s,color .3s}
+  #stage{position:fixed;inset:0;overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+  #stage.dragging{cursor:grabbing}
+  #track{position:absolute;inset:0}
+  .word{position:absolute;top:0;white-space:nowrap;will-change:transform;transform-origin:0 50%;
+    line-height:1;letter-spacing:-0.01em;cursor:pointer}
+  #guide{position:absolute;left:0;right:0;height:0;border-top:1px dashed var(--mute);opacity:.6;pointer-events:none;display:none}
+  #guide span{position:absolute;right:12px;top:-18px;font:11px/1 Inter,sans-serif;color:var(--mute)}
+  #axis{position:absolute;top:0;bottom:0;width:17px;margin-left:-8px;cursor:ew-resize;z-index:5;display:none;touch-action:none}
+  #axis::before{content:"";position:absolute;top:0;bottom:0;left:8px;border-left:1px solid var(--ink);opacity:.18;transition:opacity .2s}
+  #axis:hover::before,#axis.drag::before{opacity:.6}
+  #axis::after{content:"⇆";position:absolute;top:50%;left:8px;transform:translate(-50%,-50%);font:12px/1 Inter,sans-serif;
+    background:var(--bg);color:var(--ink);padding:4px 2px;opacity:0;transition:opacity .2s}
+  #axis:hover::after,#axis.drag::after{opacity:.8}
+  #nums{position:absolute;inset:0;pointer-events:none}
+  .num{position:absolute;top:0;left:0;font:500 12px/1 ui-monospace,Menlo,monospace;color:var(--ink);will-change:transform,opacity}
+  #info{position:absolute;top:0;left:0;pointer-events:none;display:none;max-width:300px}
+  #info .cnt{font:500 12px/1 ui-monospace,Menlo,monospace;color:var(--mute);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+  #info .cnt i{display:block;width:40px;height:1px;background:var(--mute)}
+  #info .sub{font:400 18px/1.35 Inter,sans-serif;color:var(--ink)}
+  #info.swap .sub,#info.swap .cnt{animation:infoIn .55s cubic-bezier(.2,.8,.2,1)}
+  @keyframes infoIn{from{opacity:0;transform:translateY(14px) rotateX(-40deg)}to{opacity:1;transform:none}}
+  html,body{transition:background .6s ease,color .6s ease}
+  .num,#info .sub,#info .cnt,#hud,#hud b{transition:color .6s ease}
+  #axis::before{transition:opacity .2s,border-color .6s ease}
+  #theme{position:fixed;top:18px;right:24px;flex-direction:row-reverse;z-index:20;display:flex;align-items:center;gap:10px;
+    border:0;background:transparent;color:var(--ink);font:500 13px/1 Inter,sans-serif;cursor:pointer;padding:6px 0;
+    transition:color .6s ease}
+  #theme .sw{position:relative;width:38px;height:22px;border-radius:999px;border:1px solid var(--ink);transition:border-color .6s ease}
+  #theme .sw i{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--ink);
+    transition:transform .45s cubic-bezier(.6,0,.2,1),background .6s ease}
+  body.dark #theme .sw i{transform:translateX(16px)}
+  #hud{position:fixed;left:20px;bottom:18px;font:12px/1.5 Inter,sans-serif;color:var(--mute);pointer-events:none}
+  #hud b{color:var(--ink);font-weight:600}
+
+  /* panel */
+  #toggle{position:fixed;bottom:16px;right:16px;z-index:20;border:1px solid var(--line);background:var(--panel-bg);
+    color:var(--panel-ink);font:600 13px/1 Inter,sans-serif;padding:10px 14px;border-radius:999px;cursor:pointer;backdrop-filter:blur(8px)}
+  #panel{position:fixed;top:60px;right:16px;bottom:64px;width:320px;z-index:19;overflow:auto;
+    background:var(--panel-bg);color:var(--panel-ink);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px 18px;font:13px/1.35 Inter,sans-serif;backdrop-filter:blur(10px);
+    box-shadow:0 10px 40px rgba(0,0,0,.08)}
+  #panel.hidden{display:none}
+  .grp{margin:16px 0 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:600}
+  .grp:first-child{margin-top:0}
+  .row{margin:9px 0}
+  .row .top{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
+  .row .val{font-variant-numeric:tabular-nums;color:var(--mute)}
+  .hint{font-size:11px;color:var(--mute);margin-top:2px}
+  input[type=range]{width:100%;accent-color:var(--panel-ink)}
+  .tog{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:9px 0;cursor:pointer}
+  .tog input{width:16px;height:16px;accent-color:var(--panel-ink)}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{flex:1;border:0;background:transparent;color:var(--panel-ink);padding:7px 6px;font:12px Inter,sans-serif;cursor:pointer}
+  .seg button.on{background:var(--panel-ink);color:var(--bg)}
+  select{width:100%;padding:6px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--panel-ink);font:13px Inter,sans-serif}
+  select option{color:#181819}
+  .btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .btns button{flex:1 1 45%;border:1px solid var(--line);background:transparent;color:var(--panel-ink);
+    padding:8px 6px;border-radius:8px;font:12px Inter,sans-serif;cursor:pointer}
+  .btns button.primary{background:var(--panel-ink);color:var(--bg);border-color:var(--panel-ink)}
+  textarea{width:100%;height:110px;margin-top:8px;font:11px/1.4 ui-monospace,Menlo,monospace;border:1px solid var(--line);
+    border-radius:8px;background:transparent;color:var(--panel-ink);padding:8px;display:none}
+  @media (max-width:640px){
+    #panel{left:8px;right:8px;width:auto;top:auto;bottom:60px;max-height:58vh}
+    #toggle{bottom:10px;right:10px}
+    #theme{top:12px;right:14px}
+    #hud{left:12px;bottom:10px}
+  }
+</style>
+</head>
+<body>
+<div id="stage"><div id="axis"></div><div id="nums"></div><div id="track"></div><div id="info"><div class="cnt"><span id="infoNum">01 / 12</span><i></i></div><div class="sub" id="infoSub"></div></div><div id="guide"><span>зона фокусу</span></div></div>
+<div id="hud">Активний: <b id="active">—</b> · скрол / свайп / ↑ ↓</div>
+<button id="theme" type="button" aria-label="Переключить тему"><span class="sw"><i></i></span><span id="themeLabel">Тёмная тема</span></button>
+<button id="toggle" type="button">Сховати налаштування</button>
+<div id="panel"></div>
+
+<script>
+(() => {
+  const WORDS = ["PR","Книга","Кейсы","Школа","Отзывы","Креатив","Награды","Маркетинг",
+    "Иммерсивный\nмаркетинг","Статьи в СМИ","Услуги бизнесу","О нас. Контакты"];
+
+  const SUBS = ["Влияем на мнения и формируем поведение","Иммерсивный маркетинг: система хищных продаж",
+    "Кейсы, которые принесли результат","Курс «Иммерсивный маркетинг» для практиков",
+    "Голоса клиентов громче любой рекламы","Креативность ждёт, пока выдохнется заурядность",
+    "Интеллект, способный побеждать","Деньги в маркетинг должны приносить ещё больше денег",
+    "Люди покупают эмоцию владения","О нас пишут с 2016 года","Не лучше других. Лучшие для вас",
+    "Ядро Sales Machine"];
+
+  const PRESET_CURRENT = { smooth:0.10, sens:1, inertia:0, snap:false, snapDelay:180, dir:1,
+    twist:15, twistDir:1, maxA:90, skew:20, persp:0, focus:22,
+    fs:100, step:130, left:25, font:"Montserrat", weight:500,
+    tone:false, outline:false, blur:false, dark:false, guide:false,
+    velTwist:false, velAmt:1, tilt:false, tiltAmt:4, axis:false, hover:false, info:false, ribbon:false,
+    hoverUnwind:0, hoverDim:0.6, hoverEase:0.06 };
+  const PRESET_SMOOTH = { ...PRESET_CURRENT, smooth:0.07, sens:0.9, inertia:14, snap:true, snapDelay:160,
+    tone:true, guide:false };
+  const PRESET_LIVE = { ...PRESET_SMOOTH, velTwist:true, velAmt:1.2, tilt:true, tiltAmt:4, axis:true,
+    hover:true, info:true, ribbon:false, persp:0, hoverUnwind:0.6 };
+  const PRESET_MINE = { ...PRESET_CURRENT,
+    smooth:0.02, sens:0.9, inertia:14, snap:true, snapDelay:160, dir:-1,
+    twist:21, twistDir:-1, maxA:90, skew:20, persp:0, focus:40,
+    fs:90, step:125, left:9, font:"Manrope", weight:500,
+    tone:true, outline:false, blur:true, dark:false, guide:false,
+    velTwist:false, velAmt:1.2, tilt:false, tiltAmt:3, axis:true, hover:true, info:true, ribbon:false,
+    hoverUnwind:0, hoverDim:0.2, hoverEase:0.06 };
+
+  const STORE_KEY = "sm-spiral-a1-v5";
+  let P = { ...PRESET_MINE };
+  try { const s = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); if (s) P = { ...P, ...s }; } catch(e) {}
+  const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(P)); } catch(e) {} };
+
+  const SCHEMA = [
+    {g:"Рух скролу"},
+    {k:"smooth", l:"Згладжування", min:0.02, max:0.3, s:0.005, h:"менше = плавніше й довше доїжджає"},
+    {k:"sens", l:"Чутливість колеса", min:0.1, max:3, s:0.05},
+    {k:"inertia", l:"Інерція свайпу / перетягування", min:0, max:40, s:1},
+    {k:"snap", t:"tog", l:"Доводка до найближчого слова"},
+    {k:"snapDelay", l:"Затримка доводки, мс", min:60, max:800, s:10, h:"скільки чекати після зупинки скролу"},
+    {k:"dir", t:"seg", l:"Напрямок руху при скролі", o:[[1,"Вниз → слова вгору"],[-1,"Вниз → слова вниз"]]},
+    {g:"Закрут"},
+    {k:"twist", l:"Поворот між сусідніми словами, °", min:0, max:45, s:0.5},
+    {k:"twistDir", t:"seg", l:"Напрямок закруту", o:[[1,"Як зараз"],[-1,"Дзеркально"]]},
+    {k:"maxA", l:"Максимальний кут, °", min:20, max:90, s:1},
+    {k:"skew", l:"Нахил (skew) при макс. куті, °", min:0, max:40, s:0.5},
+    {k:"persp", l:"Перспектива, px", min:0, max:3000, s:50, h:"0 = вимкнено (як на сайті зараз)"},
+    {k:"focus", l:"Зона фокусу, % висоти екрана", min:5, max:70, s:1},
+    {g:"Ефекти (що робить цікавішим)"},
+    {k:"velTwist", t:"tog", l:"1. Закрут реагує на швидкість"},
+    {k:"velAmt", l:"   сила реакції", min:0, max:3, s:0.1, h:"швидко крутиш — стрічка скручується сильніше, зупинився — розкручується"},
+    {k:"info", t:"tog", l:"2. Панель фокусу: номер + підзаголовок"},
+    {k:"axis", t:"tog", l:"3. Вісь драбини + номери 01–12"},
+    {k:"hover", t:"tog", l:"4. Hover: наведене слово чорне й різке, інші сіріють"},
+    {k:"hoverDim", l:"   наскільки сіріють інші", min:0, max:1, s:0.05},
+    {k:"hoverEase", l:"   швидкість переходу hover", min:0.01, max:0.3, s:0.005, h:"менше = повільніший, м'якший перехід у сірий і назад"},
+    {k:"hoverUnwind", l:"   розкручувати наведене", min:0, max:1, s:0.05, h:"0 = лишається під своїм кутом, 1 = повністю рівне"},
+    {k:"tilt", t:"tog", l:"5. Нахил стрічки за курсором"},
+    {k:"tiltAmt", l:"   сила нахилу, °", min:0, max:12, s:0.5, h:"вся стрічка злегка повертається за мишею"},
+    {k:"ribbon", t:"tog", l:"6. Справжня стрічка: слова перевертаються на звороті"},
+    {g:"Вигляд"},
+    {k:"fs", l:"Розмір шрифту, px", min:40, max:180, s:1},
+    {k:"step", l:"Крок між словами, px", min:60, max:260, s:1},
+    {k:"left", l:"Відступ зліва, %", min:0, max:50, s:0.5},
+    {k:"font", t:"sel", l:"Шрифт (Gilroy на сайті — тут найближчі)", o:["Montserrat","Manrope","Onest","Inter"]},
+    {k:"weight", l:"Насиченість", min:300, max:800, s:100},
+    {k:"tone", t:"tog", l:"Тон: сірий під кутом → чорний у фокусі"},
+    {k:"outline", t:"tog", l:"Контур під кутом → заливка у фокусі"},
+    {k:"blur", t:"tog", l:"Розмиття глибини"},
+    {k:"dark", t:"tog", l:"Темна тема"},
+    {k:"guide", t:"tog", l:"Показати лінію фокусу"},
+  ];
+
+  // ---------- panel ----------
+  const panel = document.getElementById("panel");
+  const controls = {};
+  const fmt = (k, v) => (typeof v === "number" && !Number.isInteger(v)) ? (+v).toFixed(v < 1 ? 3 : 1).replace(/\.?0+$/,"") : v;
+
+  function buildPanel() {
+    panel.innerHTML = "";
+    for (const it of SCHEMA) {
+      if (it.g) { const d = document.createElement("div"); d.className = "grp"; d.textContent = it.g; panel.appendChild(d); continue; }
+      if (it.t === "tog") {
+        const lab = document.createElement("label"); lab.className = "tog";
+        lab.innerHTML = `<span>${it.l}</span>`;
+        const inp = document.createElement("input"); inp.type = "checkbox"; inp.checked = !!P[it.k];
+        inp.addEventListener("change", () => { P[it.k] = inp.checked; changed(); });
+        lab.appendChild(inp); panel.appendChild(lab);
+        controls[it.k] = () => { inp.checked = !!P[it.k]; };
+        continue;
+      }
+      const row = document.createElement("div"); row.className = "row";
+      const top = document.createElement("div"); top.className = "top";
+      top.innerHTML = `<span>${it.l}</span>`;
+      row.appendChild(top);
+      if (it.t === "seg") {
+        const seg = document.createElement("div"); seg.className = "seg";
+        const btns = it.o.map(([v, txt]) => {
+          const b = document.createElement("button"); b.type = "button"; b.textContent = txt;
+          b.addEventListener("click", () => { P[it.k] = v; changed(); });
+          seg.appendChild(b); return [v, b];
+        });
+        row.appendChild(seg);
+        controls[it.k] = () => btns.forEach(([v, b]) => b.classList.toggle("on", P[it.k] === v));
+      } else if (it.t === "sel") {
+        const sel = document.createElement("select");
+        it.o.forEach(f => { const o = document.createElement("option"); o.value = f; o.textContent = f; sel.appendChild(o); });
+        sel.addEventListener("change", () => { P[it.k] = sel.value; changed(); });
+        row.appendChild(sel);
+        controls[it.k] = () => { sel.value = P[it.k]; };
+      } else {
+        const val = document.createElement("span"); val.className = "val"; top.appendChild(val);
+        const r = document.createElement("input"); r.type = "range"; r.min = it.min; r.max = it.max; r.step = it.s;
+        r.addEventListener("input", () => { P[it.k] = parseFloat(r.value); val.textContent = fmt(it.k, P[it.k]); changed(); });
+        row.appendChild(r);
+        controls[it.k] = () => { r.value = P[it.k]; val.textContent = fmt(it.k, P[it.k]); };
+      }
+      if (it.h) { const h = document.createElement("div"); h.className = "hint"; h.textContent = it.h; row.appendChild(h); }
+      panel.appendChild(row);
+    }
+    const g = document.createElement("div"); g.className = "grp"; g.textContent = "Пресети та експорт"; panel.appendChild(g);
+    const btns = document.createElement("div"); btns.className = "btns";
+    btns.innerHTML = `<button type="button" class="primary" data-a="mine">Мій пресет</button>
+      <button type="button" data-a="cur">Як на сайті зараз</button>
+      <button type="button" data-a="smooth">Плавний</button>
+      <button type="button" data-a="live">Живий (усі ефекти)</button>
+      <button type="button" class="primary" data-a="copy">Скопіювати налаштування</button>`;
+    panel.appendChild(btns);
+    const ta = document.createElement("textarea"); ta.readOnly = true; panel.appendChild(ta);
+    btns.addEventListener("click", async e => {
+      const a = e.target.dataset && e.target.dataset.a; if (!a) return;
+      if (a === "mine") { P = { ...PRESET_MINE }; changed(); syncAll(); }
+      if (a === "cur") { P = { ...PRESET_CURRENT }; changed(); syncAll(); }
+      if (a === "smooth") { P = { ...PRESET_SMOOTH }; changed(); syncAll(); }
+      if (a === "live") { P = { ...PRESET_LIVE }; changed(); syncAll(); }
+      if (a === "copy") {
+        const json = JSON.stringify(P, null, 2);
+        ta.value = json; ta.style.display = "block";
+        try { await navigator.clipboard.writeText(json); e.target.textContent = "Скопійовано ✓"; }
+        catch (err) { ta.select(); e.target.textContent = "Виділіть і скопіюйте нижче"; }
+        setTimeout(() => e.target.textContent = "Скопіювати налаштування", 1800);
+      }
+    });
+    syncAll();
+  }
+  const syncAll = () => Object.values(controls).forEach(f => f());
+
+  const toggleBtn = document.getElementById("toggle");
+  if (innerWidth < 640) { panel.classList.add("hidden"); toggleBtn.textContent = "Налаштування"; }
+  toggleBtn.addEventListener("click", () => {
+    const h = panel.classList.toggle("hidden");
+    toggleBtn.textContent = h ? "Налаштування" : "Сховати налаштування";
+  });
+
+  // ---------- layout ----------
+  const stage = document.getElementById("stage");
+  const track = document.getElementById("track");
+  const guide = document.getElementById("guide");
+  const activeEl = document.getElementById("active");
+  // Each line of a menu item is its own row (rotates on its own), rows of one item share index i.
+  let fs, step, rows = [], itemCenter = [], L = 1, vh = innerHeight, vw = innerWidth;
+
+  function layout() {
+    vh = innerHeight; vw = innerWidth;
+    fs = Math.min(P.fs, vw * 0.13);
+    const k = fs / P.fs;
+    step = Math.max(P.step * k, fs * 0.9);
+    rows = []; itemCenter = [];
+    let acc = 0;
+    WORDS.forEach((w, i) => {
+      const ls = w.split("\n");
+      const first = acc;
+      ls.forEach((t, l) => {
+        rows.push({ i, t, off: acc, first: l === 0 });
+        acc += (l < ls.length - 1) ? fs * 0.95 : step;
+      });
+      const lastOff = first + (ls.length - 1) * fs * 0.95;
+      itemCenter[i] = (first + lastOff) / 2 + fs / 2;
+    });
+    L = acc;
+  }
+
+  const themeBtn = document.getElementById("theme");
+  const themeLabel = document.getElementById("themeLabel");
+  themeBtn.addEventListener("click", () => { P.dark = !P.dark; changed(); controls.dark && controls.dark(); });
+
+  function changed() {
+    document.body.classList.toggle("dark", !!P.dark);
+    themeLabel.textContent = P.dark ? "Светлая тема" : "Тёмная тема";
+    track.style.perspective = P.persp > 0 ? P.persp + "px" : "none";
+    track.style.fontFamily = `"${P.font}", sans-serif`;
+    track.style.fontWeight = P.weight;
+    guide.style.display = P.guide ? "block" : "none";
+    stage.style.perspective = P.tilt ? "1600px" : "none";
+    track.style.transformStyle = "flat";
+    if (!P.tilt) track.style.transform = "none";
+    document.getElementById("axis").style.display = P.axis ? "block" : "none";
+    document.getElementById("nums").style.display = P.axis ? "block" : "none";
+    document.getElementById("info").style.display = P.info ? "block" : "none";
+    layout(); save(); lastInput = performance.now(); snapped = false;
+  }
+
+  // ---------- motion state ----------
+  let cur = 0, target = 0, lastInput = 0, snapped = true, dragging = false;
+  let lastY = 0, vel = 0, lastT = 0, downY = 0, moved = 0;
+
+  const mod = (n, m) => ((n % m) + m) % m;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function nearestCenterPos(t) {
+    // world cur so that nearest word center sits on focus line
+    const fy = vh * P.focus / 100;
+    let best = t, bestD = Infinity;
+    const c0 = Math.floor(t / L);
+    for (let c = c0 - 1; c <= c0 + 2; c++) {
+      for (let i = 0; i < WORDS.length; i++) {
+        const want = c * L + itemCenter[i] - fy;
+        const d = Math.abs(want - t);
+        if (d < bestD) { bestD = d; best = want; }
+      }
+    }
+    return best;
+  }
+
+  function input(dy) { target += dy * P.dir; lastInput = performance.now(); snapped = false; }
+
+  stage.addEventListener("wheel", e => {
+    e.preventDefault();
+    let dy = e.deltaY;
+    if (e.deltaMode === 1) dy *= 16; else if (e.deltaMode === 2) dy *= vh;
+    input(dy * P.sens);
+  }, { passive: false });
+
+  // draggable axis (left hinge line) → changes "left"
+  const axisDrag = document.getElementById("axis");
+  let axisDragging = false;
+  axisDrag.addEventListener("pointerdown", e => {
+    e.stopPropagation(); axisDragging = true; axisDrag.classList.add("drag");
+    try { axisDrag.setPointerCapture(e.pointerId); } catch(_) {}
+  });
+  axisDrag.addEventListener("pointermove", e => {
+    if (!axisDragging) return;
+    e.stopPropagation();
+    P.left = Math.round(clamp(e.clientX / vw * 100, 0, 60) * 2) / 2;
+    controls.left && controls.left();
+  });
+  const axisEnd = () => { if (!axisDragging) return; axisDragging = false; axisDrag.classList.remove("drag"); save(); };
+  axisDrag.addEventListener("pointerup", axisEnd);
+  axisDrag.addEventListener("pointercancel", axisEnd);
+
+  stage.addEventListener("pointerdown", e => {
+    dragging = true; stage.classList.add("dragging");
+    lastY = downY = e.clientY; lastT = performance.now(); vel = 0; moved = 0;
+    try { stage.setPointerCapture(e.pointerId); } catch(_) {}
+  });
+  let mouseX = -1, mouseY = -1, mx = 0, my = 0;
+  stage.addEventListener("pointerleave", () => { mouseX = mouseY = -1; });
+  stage.addEventListener("pointermove", e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    if (!dragging) return;
+    const now = performance.now();
+    const dy = lastY - e.clientY;
+    moved = Math.max(moved, Math.abs(e.clientY - downY));
+    const dt = Math.max(1, now - lastT);
+    vel = vel * 0.6 + (dy / dt) * 16 * 0.4; // px per frame
+    lastY = e.clientY; lastT = now;
+    input(dy);
+  });
+  const endDrag = e => {
+    if (!dragging) return;
+    dragging = false; stage.classList.remove("dragging");
+    if (moved < 6) {
+      // click: bring clicked word into focus
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const w = el && el.closest && el.closest(".word");
+      if (w) {
+        const fy = vh * P.focus / 100;
+        const c = +w.dataset.c, i = +w.dataset.i;
+        target = c * L + itemCenter[i] - fy;
+        snapped = true; lastInput = performance.now();
+      }
+      return;
+    }
+    if (performance.now() - lastT < 80) input(vel * P.inertia);
+    lastInput = performance.now();
+  };
+  stage.addEventListener("pointerup", endDrag);
+  stage.addEventListener("pointercancel", endDrag);
+
+  addEventListener("keydown", e => {
+    if (e.target.closest && e.target.closest("#panel")) return;
+    const k = e.key;
+    let n = 0;
+    if (k === "ArrowDown" || k === "PageDown" || k === " ") n = 1;
+    if (k === "ArrowUp" || k === "PageUp") n = -1;
+    if (!n) return;
+    e.preventDefault();
+    const base = nearestCenterPos(target);
+    const sign = n * P.dir;
+    // next word center strictly beyond the current one in that direction
+    const fy = vh * P.focus / 100;
+    let best = base, bestD = Infinity;
+    const c0 = Math.floor(base / L);
+    for (let c = c0 - 1; c <= c0 + 2; c++) for (let i = 0; i < WORDS.length; i++) {
+      const want = c * L + itemCenter[i] - fy;
+      const d = (want - base) * sign;
+      if (d > 1 && d < bestD) { bestD = d; best = want; }
+    }
+    target = best;
+    lastInput = performance.now(); snapped = true;
+  });
+
+  addEventListener("resize", () => { layout(); });
+
+  // ---------- render ----------
+  const pool = [], numPool = [];
+  const numsBox = document.getElementById("nums");
+  const axisEl = document.getElementById("axis");
+  const infoEl = document.getElementById("info");
+  const infoNum = document.getElementById("infoNum");
+  const infoSub = document.getElementById("infoSub");
+  function getEl(idx) {
+    let el = pool[idx];
+    if (!el) { el = document.createElement("div"); el.className = "word"; track.appendChild(el); pool[idx] = el; }
+    return el;
+  }
+  function getNum(idx) {
+    let el = numPool[idx];
+    if (!el) { el = document.createElement("div"); el.className = "num"; numsBox.appendChild(el); numPool[idx] = el; }
+    return el;
+  }
+  const pad = n => String(n).padStart(2, "0");
+
+  let prevCur = 0, vs = 0, hoverKey = "", hoverI = -1, dimMix = 0, activeIdx = -1;
+  const hl = new Map();
+  let themeMix = P.dark ? 1 : 0;
+
+  function frame(now) {
+    // snap after idle
+    if (P.snap && !snapped && !dragging && now - lastInput > P.snapDelay) {
+      target = nearestCenterPos(target); snapped = true;
+    }
+    cur += (target - cur) * P.smooth;
+    if (Math.abs(target - cur) < 0.01) cur = target;
+
+    // velocity (px/frame), smoothed
+    vs += ((cur - prevCur) - vs) * 0.15; prevCur = cur;
+    const velBoost = P.velTwist ? clamp(Math.abs(vs) / 25 * P.velAmt, 0, 2.5) : 0;
+    const twist = P.twist * (1 + velBoost);
+    const skewMax = P.skew * (1 + velBoost * 0.5);
+
+    // cursor tilt
+    if (P.tilt) {
+      const tx = mouseX < 0 ? 0 : (mouseX / vw) * 2 - 1;
+      const ty = mouseY < 0 ? 0 : (mouseY / vh) * 2 - 1;
+      mx += (tx - mx) * 0.06; my += (ty - my) * 0.06;
+      track.style.transform = `rotateY(${(mx * P.tiltAmt).toFixed(2)}deg) rotateX(${(-my * P.tiltAmt * 0.6).toFixed(2)}deg)`;
+    }
+
+    // hover target
+    let hk = "", hi = -1;
+    if (P.hover && !dragging && !axisDragging && mouseX >= 0) {
+      const el = document.elementFromPoint(mouseX, mouseY);
+      const w = el && el.closest && el.closest(".word");
+      if (w) { hk = w.dataset.ik; hi = +w.dataset.i; }
+    }
+    if (hk !== hoverKey) { hoverKey = hk; hoverI = hi; }
+    // per-item highlight: each item eases in/out on its own, so switching words never jumps
+    const ease = P.hoverEase || 0.06;
+    if (hoverKey && !hl.has(hoverKey)) hl.set(hoverKey, 0);
+    for (const [k, v] of hl) {
+      const nv = v + ((k === hoverKey ? 1 : 0) - v) * ease;
+      if (k !== hoverKey && nv < 0.002) hl.delete(k); else hl.set(k, nv);
+    }
+    dimMix += ((hoverKey ? 1 : 0) - dimMix) * ease * 0.8;   // dimming of all the others
+
+    const fy = vh * P.focus / 100;
+    guide.style.top = fy + "px";
+    const left = vw * P.left / 100;
+    axisEl.style.left = left + "px";
+    // theme colours ease between light and dark so words change together with the background
+    themeMix += ((P.dark ? 1 : 0) - themeMix) * 0.07;
+    const tm = themeMix;
+    const lerp3 = (a, b) => a.map((v, j) => Math.round(v + (b[j] - v) * tm));
+    const ink = lerp3([24,24,25], [242,242,242]);
+    const grey = lerp3([200,200,202], [82,82,85]);
+    const back = lerp3([222,222,224], [52,52,55]);
+    const margin = fs * 2.5;
+    const c0 = Math.floor((cur - margin) / L), c1 = Math.floor((cur + vh + margin) / L);
+    const limit = P.ribbon ? 180 : P.maxA;
+
+    const mixc = (a, b, t) => a.map((v, j) => Math.round(v + (b[j] - v) * t));
+
+    let n = 0, nn = 0, bestD = Infinity, bestI = 0;
+    for (let c = c0; c <= c1; c++) {
+      for (let r = 0; r < rows.length; r++) {
+        const row = rows[r], i = row.i;
+        const y = c * L + row.off - cur;
+        if (y < -margin || y > vh + margin) continue;
+        const center = y + fs / 2;
+        const d = (center - fy) / step;               // rows away from focus (+ = below)
+        let a = clamp(-d * twist, -limit, limit) * P.twistDir;
+        const ik = c + "_" + i;                        // item key (all lines of one item)
+        const h = P.hover ? (hl.get(ik) || 0) : 0;     // 0…1 highlight of this item
+        if (h) a *= (1 - h * P.hoverUnwind);
+        const absA = Math.abs(a);
+        const flip = absA > 90;                        // showing the back of the ribbon
+        const t90 = Math.min(1, absA / 90);
+        const sk = ((flip ? 180 - absA : absA) / 90) * skewMax;
+
+        const el = getEl(n);
+        const key = c + "_" + r;
+        if (el.dataset.key !== key) {
+          el.dataset.key = key; el.dataset.ik = ik; el.dataset.c = c; el.dataset.i = i;
+          el.textContent = row.t;
+        }
+        el.style.display = "";
+        el.style.fontSize = fs + "px";
+        el.style.visibility = (!P.ribbon && absA >= 89.6) ? "hidden" : "visible";
+        el.style.transform = `translate3d(${left}px, ${y}px, 0) rotateY(${a}deg) skewY(${sk}deg)`;
+
+        const tt = flip ? 1 : Math.min(1, absA / Math.max(1, P.maxA));
+        let col = ink;
+        if (P.tone) col = mixc(ink, grey, tt);
+        if (flip) col = back;
+        let blur = P.blur && tt > 0.05 ? tt * 2.2 : 0;
+        let fillA = P.outline && !flip ? Math.max(0, 1 - tt * 1.6) : 1;
+        if (P.hover) {
+          // others fade to grey, hovered item goes back to solid black and sharp
+          col = mixc(col, back, P.hoverDim * dimMix * (1 - h));
+          if (h) {
+            col = mixc(col, ink, h);
+            blur *= (1 - h);
+            fillA = fillA + (1 - fillA) * h;
+          }
+        }
+        if (P.outline && !flip) {
+          el.style.color = `rgba(${col[0]},${col[1]},${col[2]},${fillA.toFixed(3)})`;
+          el.style.webkitTextStroke = `1px rgb(${col[0]},${col[1]},${col[2]})`;
+        } else {
+          el.style.color = `rgb(${col[0]},${col[1]},${col[2]})`;
+          el.style.webkitTextStroke = "0";
+        }
+        el.style.filter = blur > 0.02 ? `blur(${blur.toFixed(2)}px)` : "none";
+
+        if (P.axis && row.first) {
+          const nm = getNum(nn++);
+          nm.style.display = "";
+          nm.textContent = pad(i + 1);
+          nm.style.transform = `translate3d(${left - 34}px, ${center - 6}px, 0)`;
+          let op = 1 - t90 * 0.85;
+          if (P.hover) { op = op * (1 - 0.6 * P.hoverDim * dimMix * (1 - h)); op = op + (1 - op) * h; }
+          nm.style.opacity = op.toFixed(2);
+        }
+        n++;
+        if (row.first) {
+          const ad = Math.abs(c * L + itemCenter[i] - cur - fy);
+          if (ad < bestD) { bestD = ad; bestI = i; }
+        }
+      }
+    }
+    for (let j = n; j < pool.length; j++) pool[j].style.display = "none";
+    for (let j = P.axis ? nn : 0; j < numPool.length; j++) numPool[j].style.display = "none";
+    if (P.hover && hoverKey && hoverI >= 0) bestI = hoverI;   // info panel follows the hovered item
+
+    const name = WORDS[bestI].replace("\n", " ");
+    if (activeEl.textContent !== name) activeEl.textContent = name;
+    if (P.info) {
+      const small = vw < 640;
+      const ix = small ? left : Math.max(left + fs * 4.2, vw * 0.55);
+      const iy = small ? fy + fs * 0.75 : fy - 14;
+      infoEl.style.transform = `translate3d(${Math.min(ix, vw - 320)}px, ${iy}px, 0)`;
+      if (bestI !== activeIdx) {
+        activeIdx = bestI;
+        infoNum.textContent = `${pad(bestI + 1)} / ${pad(WORDS.length)}`;
+        infoSub.textContent = SUBS[bestI];
+        infoEl.classList.remove("swap"); void infoEl.offsetWidth; infoEl.classList.add("swap");
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  buildPanel();
+  changed();
+  // start with first word in focus
+  target = cur = nearestCenterPos(0); snapped = true;
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

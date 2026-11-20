@@ -1,0 +1,153 @@
+<!-- Sales Machine /kurs — ось и номера + поворот H2 при скролле
+     Вставить: Webflow → Page Settings (страница kurs) → Custom Code → Before </body> tag
+     Структуру, кнопки и Webflow-анимации не трогает: всё добавляется поверх. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sm-axis: rgba(24, 24, 25, .18);  /* цвет оси */
+    --sm-ink: #181819;                /* номера разделов, точки */
+    --sm-grey: #8e8e93;               /* номера модулей / вопросов */
+    --sm-h2-angle: 26;                /* макс. поворот H2, градусы */
+  }
+  .main-wrapper { position: relative; }
+  .sm-axis { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  .sm-axis__line { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--sm-axis); }
+  .sm-axis__num {
+    position: absolute; transform: translateY(-50%); width: 36px; text-align: right;
+    font: 500 12px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .06em; color: var(--sm-ink);
+  }
+  .sm-axis__num--sub { color: var(--sm-grey); font-weight: 400; font-size: 11px; }
+  .sm-axis__dot {
+    position: absolute; width: 9px; height: 9px; margin: -5px 0 0 -4px; box-sizing: border-box;
+    border: 1px solid var(--sm-ink); border-radius: 50%; background: #fff; transition: background .3s ease;
+  }
+  .sm-axis__dot.is-on { background: var(--sm-ink); }
+  .sm-axis__tick { position: absolute; width: 9px; height: 1px; margin-left: -4px; background: var(--sm-ink); opacity: .45; }
+
+  /* Узкие экраны: небольшой отступ под ось */
+  .sm-tight .container_kurs,
+  .sm-tight .container_hero_kurs { padding-left: 40px !important; }
+
+  /* H2: петля слева, как на главной */
+  .h2_kurs { transform-origin: 0 50%; }
+
+  /* Hover в списках (только desktop): наведённый — как есть, остальные чуть гаснут */
+  @media (min-width: 992px) {
+    #program .wrapper_q > .dropdown-10,
+    .grid3x1 > .white_wrapper40,
+    .swiper-wrapper > .swiper-slide { transition: opacity .3s ease; }
+    #program .wrapper_q:hover > .dropdown-10:not(:hover),
+    .grid3x1:hover > .white_wrapper40:not(:hover),
+    .swiper-wrapper:hover > .swiper-slide:not(:hover) { opacity: .4; }
+  }
+
+  /* Лёгкая правка типографики (по желанию — раскомментировать и подобрать):
+  .h2_kurs { letter-spacing: -.01em; line-height: 1.05; }
+  .h1 { letter-spacing: -.02em; }
+  */
+</style>
+<script>
+(function () {
+  var main = document.querySelector('.main-wrapper');
+  if (!main) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  var maxAngle = parseFloat(getComputedStyle(root).getPropertyValue('--sm-h2-angle')) || 26;
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function visible(el) { return el && el.offsetParent !== null; }
+
+  var layer = document.createElement('div');
+  layer.className = 'sm-axis';
+  layer.setAttribute('aria-hidden', 'true');
+  var line = document.createElement('div');
+  line.className = 'sm-axis__line';
+  layer.appendChild(line);
+  main.appendChild(layer);
+
+  // Разделы: H1 героя + все видимые H2 (скрытый дубль отзывов пропускается)
+  var heads = [document.querySelector('.section_kurs_hero .h1')]
+    .concat([].slice.call(document.querySelectorAll('.h2_kurs')))
+    .filter(visible);
+  var marks = [];
+  heads.forEach(function (h, i) { marks.push({ el: h, txt: pad(i + 1), main: true }); });
+
+  // Модули программы и вопросы FAQ — мелкие номера на оси
+  [].slice.call(document.querySelectorAll('.wrapper_q')).forEach(function (w) {
+    [].slice.call(w.children).filter(function (d) { return d.classList.contains('dropdown-10'); })
+      .forEach(function (d, i) {
+        marks.push({ el: d.querySelector('.w-dropdown-toggle') || d, txt: pad(i + 1), main: false });
+      });
+  });
+
+  marks.forEach(function (m) {
+    m.num = document.createElement('div');
+    m.num.className = 'sm-axis__num' + (m.main ? '' : ' sm-axis__num--sub');
+    m.num.textContent = m.txt;
+    m.mark = document.createElement('div');
+    m.mark.className = m.main ? 'sm-axis__dot' : 'sm-axis__tick';
+    layer.appendChild(m.num);
+    layer.appendChild(m.mark);
+  });
+
+  var h2s = heads.filter(function (h) { return h.classList.contains('h2_kurs'); });
+  h2s.forEach(function (h) { h._c = (getComputedStyle(h).color.match(/[\d.]+/g) || [24, 24, 25]).map(Number); });
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      ticking = false;
+      var vh = window.innerHeight;
+      h2s.forEach(function (h) {
+        var r = h.getBoundingClientRect();
+        var t = reduce ? 0 : Math.max(0, Math.min(1, (r.top - vh * 0.33) / (vh * 0.55)));
+        if (t < 0.001) { h.style.transform = ''; h.style.color = ''; return; }
+        h.style.transform = 'perspective(1100px) rotateY(' + (t * maxAngle).toFixed(2) + 'deg)';
+        var c = h._c, g = [200, 200, 202];
+        h.style.color = 'rgb(' + [0, 1, 2].map(function (i) { return Math.round(c[i] + (g[i] - c[i]) * t); }).join(',') + ')';
+      });
+      marks.forEach(function (m) {
+        if (m.main) m.mark.classList.toggle('is-on', m.el.getBoundingClientRect().top < vh * 0.45);
+      });
+    });
+  }
+
+  function layout() {
+    var mr = main.getBoundingClientRect();
+    var c = document.querySelector('.container_kurs');
+    var left = c ? c.getBoundingClientRect().left - mr.left : 0;
+    var tight = left < 90;
+    root.classList.toggle('sm-tight', tight);
+    var ax = tight ? 12 : Math.round(left - 44);
+    line.style.left = ax + 'px';
+    marks.forEach(function (m) {
+      var r = m.el.getBoundingClientRect();
+      var hidden = !r.height;
+      m.num.style.display = m.mark.style.display = hidden ? 'none' : '';
+      if (hidden) return;
+      var y = Math.round(r.top - mr.top + Math.min(r.height / 2, m.main ? 28 : 22));
+      m.num.style.top = m.mark.style.top = y + 'px';
+      m.mark.style.left = ax + 'px';
+      if (tight) {
+        m.num.style.left = (ax + 7) + 'px'; m.num.style.width = '22px';
+        m.num.style.textAlign = 'left'; m.num.style.fontSize = '10px';
+      } else {
+        m.num.style.left = (ax - 50) + 'px'; m.num.style.width = '36px';
+        m.num.style.textAlign = 'right'; m.num.style.fontSize = '';
+      }
+    });
+    onScroll();
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', layout);
+  window.addEventListener('load', layout);
+  if ('ResizeObserver' in window) new ResizeObserver(layout).observe(main);
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('.w-dropdown-toggle')) setTimeout(layout, 450);
+  });
+  layout();
+})();
+</script>
