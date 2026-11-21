@@ -199,8 +199,12 @@
   .box {
     grid-template-columns: 1fr;
   }
+  /* фото квадратне (як оригінал): раніше смуга 220px обрізала його згори й знизу */
   .photo {
-    height: 13.75rem;
+    height: auto;
+    aspect-ratio: 1;
+    max-height: 55vh;
+    object-position: 50% 25%;
   }
   .body {
     padding: 1.5rem 1.25rem;

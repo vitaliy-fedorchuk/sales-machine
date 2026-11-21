@@ -6,14 +6,15 @@ import page from "@/components/inner/page.module.css";
 import PolicyText from "@/components/politika/PolicyText";
 import PolicyToc from "@/components/politika/PolicyToc";
 import styles from "@/components/politika/Policy.module.css";
-import { POLICY } from "@/lib/pages/politika";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Политика обработки персональных данных — Sales Machine",
   description: "Политика обработки и защиты персональных данных (политика конфиденциальности) Sales Machine.",
 };
 
-export default function PolicyPage() {
+export default async function PolicyPage() {
+  const POLICY = await getContent("politika");
   return (
     <>
       <BackLink word={POLICY.word} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { REVIEWS, type Review } from "@/lib/pages/otzyvy";
+import type { Review } from "@/lib/pages/otzyvy";
 import PreviewVideo from "./PreviewVideo";
 import ReviewActions from "./ReviewActions";
 import s from "./otzyvy.module.css";
@@ -12,7 +12,7 @@ import styles from "./ReviewTitles.module.css";
  * Наведений рядок у фокусі, решта гасне; праворуч липкий «екран» — відео й опис активного відгуку.
  * На телефоні рядок розгортається з відео всередині.
  */
-export default function ReviewTitles({ onOpen }: { onOpen: (r: Review) => void }) {
+export default function ReviewTitles({ reviews: REVIEWS, onOpen }: { reviews: readonly Review[]; onOpen: (r: Review) => void }) {
   const [active, setActive] = useState(0);
   const cur = REVIEWS[active];
 

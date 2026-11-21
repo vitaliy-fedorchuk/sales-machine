@@ -6,7 +6,7 @@ import ContactCta from "@/components/inner/ContactCta";
 import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
-import { KNIGA_PAGE as K } from "@/lib/pages/kniga";
+import { getContent } from "@/lib/content";
 import styles from "./kniga.module.css";
 
 export const metadata: Metadata = {
@@ -21,7 +21,8 @@ const Arrow = () => (
   </svg>
 );
 
-export default function KnigaPage() {
+export default async function KnigaPage() {
+  const K = await getContent("kniga");
   return (
     <>
       <BackLink word={K.word} />
@@ -39,8 +40,8 @@ export default function KnigaPage() {
               <div className={styles.coverBox}>
                 <Book3D
                   className={styles.coverArea}
-                  cover={K.book.cover}
-                  alt={K.book.coverAlt}
+                  cover={K.book.cover.src}
+                  alt={K.book.cover.alt}
                   width={451}
                   height={621}
                   spine="Иммерсивный маркетинг"

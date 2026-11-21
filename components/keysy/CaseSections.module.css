@@ -133,19 +133,20 @@
 
 @media (max-width: 991px) {
   .layout {
-    grid-template-columns: 1fr;
+    /* minmax(0, …) — інакше довгий рядок міток розтягував колонку ширше за екран і обрізав картки */
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.875rem;
   }
   /* на планшеті/телефоні зміст — рядок міток, що гортається */
   .index {
     position: static;
   }
+  /* мітки категорій переносяться на кілька рядків — усі видно одразу, без прокрутки вбік */
   .indexList {
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 0.5rem;
-    overflow-x: auto;
     border: 0;
-    scrollbar-width: none;
   }
   .indexItem {
     grid-template-columns: auto auto auto;

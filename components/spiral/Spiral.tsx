@@ -284,13 +284,8 @@ export default function Spiral({ items }: Props) {
       infoSub.textContent = items[i].sub;
       if (reduce) return;
       for (const el of infoParts) {
-        el.animate(
-          [
-            { opacity: 0, transform: "translateY(0.875rem) rotateX(-40deg)" },
-            { opacity: 1, transform: "none" },
-          ],
-          { duration: 550, easing: "cubic-bezier(.2,.8,.2,1)" },
-        );
+        // просте проявлення прозорістю, без виїзду знизу
+        el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: "ease-out" });
       }
     };
 

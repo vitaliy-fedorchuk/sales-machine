@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CaseBlock, CaseBlockType, VideoFormat } from "@/lib/cases/schema";
+import { toEmbed } from "@/lib/video";
 import MediaPicker from "../../media/MediaPicker";
 import a from "../../../admin.module.css";
 import { Icon } from "../../../icons";
@@ -22,31 +23,6 @@ export const BLOCK_INFO: Record<CaseBlockType, { label: string; hint: string }> 
 type Props<T extends CaseBlockType> = { block: Extract<CaseBlock, { type: T }>; onChange: (b: CaseBlock) => void };
 
 const VIDEO_HINT = "Ссылка на ролик или код плеера: youtube.com/watch?v=…, vimeo.com/…, rutube.ru/video/…";
-
-/** Будь-яке посилання на ролик → embed-адреса плеєра */
-export const toEmbed = (raw: string) => {
-  const s = raw.trim().match(/src="([^"]+)"/)?.[1] ?? raw.trim();
-  try {
-    const u = new URL(s);
-    const host = u.hostname.replace(/^www\.|^m\./, "");
-    if (host === "youtu.be") return `https://www.youtube.com/embed/${u.pathname.slice(1)}`;
-    if (host === "youtube.com" && u.pathname === "/watch" && u.searchParams.get("v")) return `https://www.youtube.com/embed/${u.searchParams.get("v")}`;
-    if (host === "youtube.com" && u.pathname.startsWith("/shorts/")) return `https://www.youtube.com/embed/${u.pathname.split("/")[2]}`;
-    if (host === "vimeo.com" && /^\/\d+/.test(u.pathname)) {
-      const [, id, h] = u.pathname.split("/");
-      return `https://player.vimeo.com/video/${id}${h ? `?h=${h}` : ""}`;
-    }
-    if (host === "rutube.ru" && u.pathname.startsWith("/video/private/")) {
-      // приватне відео: ключ доступу ?p=… переносимо в адресу плеєра
-      const p = u.searchParams.get("p");
-      return `https://rutube.ru/play/embed/${u.pathname.split("/")[3]}/${p ? `?p=${p}` : ""}`;
-    }
-    if (host === "rutube.ru" && u.pathname.startsWith("/video/")) return `https://rutube.ru/play/embed/${u.pathname.split("/")[2]}`;
-    return s;
-  } catch {
-    return s;
-  }
-};
 
 function FormatSelect({ value, onChange }: { value: VideoFormat; onChange: (v: VideoFormat) => void }) {
   return (

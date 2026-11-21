@@ -3,7 +3,11 @@
 
 import { CONTACTS } from "@/lib/contacts";
 import { DIRECTIONS } from "@/lib/directions";
+import { KNIGA_PAGE } from "@/lib/pages/kniga";
+import { CURATOR, GRADUATES, KURS_PAGE, SPEAKERS } from "@/lib/pages/kurs";
 import { AWARD_GLOSSARY, AWARDS, NAGRADY_PAGE, VIDEO_AWARDS } from "@/lib/pages/nagrady";
+import { OTZYVY_PAGE, REVIEWS } from "@/lib/pages/otzyvy";
+import { POLICY } from "@/lib/pages/politika";
 import { IMMERSIVE_PAGE } from "@/lib/pages/immersivnyy-marketing";
 import { KREATIV_PAGE } from "@/lib/pages/kreativ";
 import { MARKETING_PAGE } from "@/lib/pages/marketing";
@@ -478,9 +482,449 @@ export const homeContent = defineContent({
   defaults: { items: DIRECTIONS.map((d) => ({ ...d })) },
 });
 
+// ---------- Відеовідгуки: спільні поля для /otzyvy і відгуків випускників курсу ----------
+
+const FORMATS = [
+  { value: "vertical", label: "Вертикальное 9:16 (сторис, шортс)" },
+  { value: "wide", label: "Горизонтальное 16:9" },
+] as const;
+
+const videoReviewFields = (opts: { links?: boolean } = {}): Field[] => [
+  { kind: "text", key: "name", label: "Имя / компания", required: true, max: 120 },
+  { kind: "textarea", key: "role", label: "Кто это (должность, город)", required: true, rows: 2, max: 300 },
+  { kind: "text", key: "siteLabel", label: "Сайт: текст ссылки (необязательно)", max: 80, placeholder: "harizmi.ru" },
+  { kind: "url", key: "siteHref", label: "Сайт: ссылка" },
+  { kind: "strings", key: "text", label: "Текст отзыва", item: "абзац", rows: 3, min: 1 },
+  { kind: "image", key: "poster", label: "Обложка видео", required: true },
+  {
+    kind: "url",
+    key: "preview",
+    label: "Короткое беззвучное превью (mp4, необязательно)",
+    hint: "Зацикленный фрагмент на обложке. Пусто — показывается просто обложка.",
+  },
+  {
+    kind: "url",
+    key: "video",
+    label: "Полное видео — ссылка",
+    required: true,
+    hint: "Загрузите видео на Vimeo, Rutube или YouTube и вставьте ссылку на него — плеер подставится сам.",
+  },
+  { kind: "select", key: "format", label: "Формат видео", options: FORMATS },
+  ...(opts.links
+    ? [
+        {
+          kind: "list",
+          key: "links",
+          label: "Кнопки под отзывом",
+          item: "кнопку",
+          title: "label",
+          subtitle: "href",
+          addTo: "end",
+          fields: [
+            { kind: "text", key: "label", label: "Текст", required: true, max: 80, placeholder: "Смотреть кейс" },
+            { kind: "url", key: "href", label: "Ссылка", required: true },
+          ],
+        } as Field,
+      ]
+    : []),
+];
+
+type ReviewSrc = (typeof REVIEWS)[number];
+const reviewOf = (r: ReviewSrc, withLinks: boolean) => ({
+  name: r.name,
+  role: r.role,
+  siteLabel: r.site?.label ?? "",
+  siteHref: r.site?.href ?? "",
+  text: [...r.text],
+  poster: img(r.poster, 480, 480, r.name),
+  preview: r.preview,
+  video: r.video,
+  format: r.format,
+  ...(withLinks ? { links: (r.links ?? []).map((l) => ({ ...l })) } : {}),
+});
+
+export const otzyvyContent = defineContent({
+  key: "otzyvy",
+  title: "Отзывы",
+  group: "Списки",
+  hint: "Видеоотзывы на /otzyvy. Видео — ссылкой на Vimeo / Rutube / YouTube.",
+  paths: ["/otzyvy"],
+  fields: [
+    ...pageHead(),
+    { kind: "list", key: "reviews", label: "Отзывы", item: "отзыв", title: "name", subtitle: "role", addTo: "start", fields: videoReviewFields({ links: true }) },
+  ],
+  defaults: {
+    word: OTZYVY_PAGE.word,
+    title: OTZYVY_PAGE.title,
+    reviews: REVIEWS.map((r) => reviewOf(r, true)),
+  },
+});
+
+// ---------- Книга ----------
+
+const linkList = (key: string, label: string, item: string): Field => ({
+  kind: "list",
+  key,
+  label,
+  item,
+  title: "label",
+  subtitle: "href",
+  addTo: "end",
+  fields: [
+    { kind: "text", key: "label", label: "Текст", required: true, max: 120 },
+    { kind: "url", key: "href", label: "Ссылка", required: true },
+  ],
+});
+
+export const knigaContent = defineContent({
+  key: "kniga",
+  title: "Книга",
+  group: "Страницы",
+  hint: "Страница /kniga: 3D-книга, где купить, отзывы, кейсы.",
+  paths: ["/kniga"],
+  fields: [
+    ...pageHead(),
+    { kind: "textarea", key: "intro", label: "Вступление", required: true, rows: 4, max: 3000 },
+    {
+      kind: "group",
+      key: "book",
+      label: "Книга",
+      fields: [
+        { kind: "image", key: "cover", label: "Передняя обложка (3D-книга)", required: true },
+        {
+          kind: "group",
+          key: "back",
+          label: "Задняя обложка (свёрстана текстом)",
+          fields: [
+            { kind: "textarea", key: "authors", label: "Авторы", hint: "Каждый автор — с новой строки.", required: true, rows: 2, max: 200 },
+            { kind: "text", key: "title", label: "Название", required: true, max: 120 },
+            { kind: "textarea", key: "text", label: "Аннотация", required: true, rows: 4, max: 1500 },
+            { kind: "text", key: "brand", label: "Подпись внизу", required: true, max: 60 },
+          ],
+        },
+        linkList("buy", "Где купить", "ссылку"),
+        {
+          kind: "list",
+          key: "lists",
+          label: "Списки «для кого / почему»",
+          item: "список",
+          title: "title",
+          addTo: "end",
+          fields: [
+            { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+            { kind: "strings", key: "items", label: "Пункты", item: "пункт", rows: 2, min: 1 },
+          ],
+        },
+      ],
+    },
+    {
+      kind: "group",
+      key: "signed",
+      label: "Книга с подписью",
+      fields: [
+        { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+        { kind: "strings", key: "text", label: "Текст", item: "абзац", rows: 3, min: 1 },
+      ],
+    },
+    {
+      kind: "group",
+      key: "reviews",
+      label: "Отзывы о книге",
+      fields: [{ kind: "text", key: "title", label: "Заголовок", required: true, max: 120 }, linkList("links", "Ссылки на отзывы", "ссылку")],
+    },
+    cta,
+    contactPopup,
+    ...casesFields,
+  ],
+  defaults: {
+    word: KNIGA_PAGE.word,
+    title: KNIGA_PAGE.title,
+    intro: KNIGA_PAGE.intro,
+    book: {
+      cover: img(KNIGA_PAGE.book.cover, 451, 621, KNIGA_PAGE.book.coverAlt),
+      back: { ...KNIGA_PAGE.book.back },
+      buy: KNIGA_PAGE.book.buy.map((b) => ({ ...b })),
+      lists: KNIGA_PAGE.book.lists.map((l) => ({ title: l.title, items: [...l.items] })),
+    },
+    signed: { title: KNIGA_PAGE.signed.title, text: [...KNIGA_PAGE.signed.text] },
+    reviews: { title: KNIGA_PAGE.reviews.title, links: KNIGA_PAGE.reviews.links.map((l) => ({ ...l })) },
+    cta: KNIGA_PAGE.cta,
+    contact: { ...KNIGA_PAGE.contact },
+    casesTitle: KNIGA_PAGE.casesTitle,
+    cases: KNIGA_PAGE.cases.map((c) => ({ ...c })),
+  },
+});
+
+// ---------- Политика обработки персональных данных ----------
+
+export const politikaContent = defineContent({
+  key: "politika",
+  title: "Политика обработки данных",
+  group: "Страницы",
+  hint: "Юридический текст /politika-obrabotki-personalnyh-dannyh — по разделам.",
+  paths: ["/politika-obrabotki-personalnyh-dannyh"],
+  fields: [
+    ...pageHead(),
+    { kind: "text", key: "subtitle", label: "Подзаголовок", required: true, max: 120 },
+    { kind: "text", key: "date", label: "Дата редакции", required: true, max: 80 },
+    {
+      kind: "list",
+      key: "sections",
+      label: "Разделы",
+      item: "раздел",
+      title: "title",
+      subtitle: "n",
+      addTo: "end",
+      fields: [
+        { kind: "text", key: "n", label: "Номер раздела", required: true, max: 6 },
+        { kind: "text", key: "title", label: "Название", required: true, max: 200 },
+        { kind: "strings", key: "body", label: "Пункты", hint: "Каждый пункт — отдельный абзац (как «1.1. …»).", item: "пункт", rows: 4, min: 1 },
+      ],
+    },
+  ],
+  defaults: {
+    word: POLICY.word,
+    title: POLICY.title,
+    subtitle: POLICY.subtitle,
+    date: POLICY.date,
+    sections: POLICY.sections.map((s) => ({ n: s.n, title: s.title, body: [...s.body] })),
+  },
+});
+
+// ---------- Курс «Иммерсивный маркетинг» ----------
+
+const speakerFields: Field[] = [
+  { kind: "text", key: "name", label: "Имя", required: true, max: 80 },
+  { kind: "text", key: "role", label: "Подпись под именем (необязательно)", max: 160 },
+  { kind: "image", key: "photo", label: "Фото", required: true },
+  { kind: "textarea", key: "bio", label: "Биография (во всплывающем окне)", required: true, rows: 4, max: 2000 },
+  { kind: "boolean", key: "book", label: "Показывать «Автор книги „Иммерсивный маркетинг“»" },
+];
+
+type SpeakerSrc = (typeof SPEAKERS)[number];
+const speakerOf = (s: SpeakerSrc) => ({
+  name: s.name,
+  role: s.role ?? "",
+  photo: img(s.photo, 640, 808, s.name),
+  bio: s.bio,
+  book: !!s.book,
+});
+
+const K = KURS_PAGE;
+
+export const kursContent = defineContent({
+  key: "kurs",
+  title: "Курс «Иммерсивный маркетинг»",
+  group: "Страницы",
+  hint: "Страница /kurs: программа, спикеры, отзывы выпускников, цены, FAQ. Заявки из форм — в «Заявках».",
+  paths: ["/kurs"],
+  fields: [
+    { kind: "textarea", key: "word", label: "Большое слово на фоне", required: true, rows: 2, max: 60 },
+    {
+      kind: "group",
+      key: "hero",
+      label: "Первый экран",
+      fields: [
+        { kind: "strings", key: "badges", label: "Плашки над заголовком", item: "плашку", rows: 1 },
+        { kind: "text", key: "title", label: "Заголовок (H1)", required: true, max: 120 },
+        { kind: "textarea", key: "lead", label: "Подзаголовок", required: true, rows: 2, max: 500 },
+        { kind: "strings", key: "cta", label: "Кнопка: лицевая сторона и обратная (при наведении)", item: "надпись", rows: 1, min: 2, max: 2 },
+      ],
+    },
+    {
+      kind: "group",
+      key: "unique",
+      label: "В чем уникальность курса",
+      fields: [
+        { kind: "image", key: "curatorPhoto", label: "Куратор: фото", required: true },
+        { kind: "text", key: "curatorName", label: "Куратор: имя", required: true, max: 80 },
+        { kind: "text", key: "curatorRole", label: "Куратор: подпись", required: true, max: 160 },
+        { kind: "textarea", key: "curatorBio", label: "Куратор: биография", required: true, rows: 4, max: 2000 },
+        { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+        { kind: "textarea", key: "intro", label: "Текст", required: true, rows: 2, max: 1000 },
+        { kind: "strings", key: "points", label: "Пункты", item: "пункт", rows: 2 },
+        { kind: "textarea", key: "bonus", label: "Бонус", required: true, rows: 2, max: 1000 },
+        { kind: "textarea", key: "outro", label: "Последняя строка", required: true, rows: 2, max: 500 },
+        { kind: "text", key: "toReviews", label: "Кнопка к отзывам", required: true, max: 80 },
+      ],
+    },
+    {
+      kind: "group",
+      key: "program",
+      label: "Программа",
+      fields: [
+        { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+        { kind: "text", key: "book", label: "Ссылка рядом с заголовком", required: true, max: 120 },
+        { kind: "textarea", key: "lead", label: "Подзаголовок", required: true, rows: 2, max: 500 },
+        { kind: "text", key: "toModule", label: "Кнопка «на модуль»", required: true, max: 80 },
+        { kind: "text", key: "toCourse", label: "Кнопка «на полный курс»", required: true, max: 80 },
+        {
+          kind: "list",
+          key: "items",
+          label: "Этапы курса",
+          item: "этап",
+          title: "title",
+          addTo: "end",
+          fields: [
+            { kind: "textarea", key: "title", label: "Название", required: true, rows: 2, max: 300 },
+            { kind: "textarea", key: "text", label: "Текст", rows: 2, max: 2000 },
+            { kind: "strings", key: "points", label: "Тезисы (жирным)", item: "тезис", rows: 2 },
+            { kind: "textarea", key: "summary", label: "Итог (курсивом)", rows: 2, max: 1000 },
+            { kind: "textarea", key: "note", label: "Выделенное примечание", rows: 2, max: 500 },
+            { kind: "text", key: "module", label: "Название модуля для заявки", hint: "Заполнено — появятся кнопки «Записаться на этот модуль / на полный курс».", max: 60 },
+          ],
+        },
+      ],
+    },
+    {
+      kind: "group",
+      key: "speakers",
+      label: "Спикеры",
+      fields: [
+        { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+        { kind: "text", key: "leadBefore", label: "Подзаголовок: до ссылки", required: true, max: 200 },
+        { kind: "text", key: "leadLink", label: "Подзаголовок: текст ссылки на главную", required: true, max: 60 },
+        { kind: "text", key: "leadAfter", label: "Подзаголовок: после ссылки", required: true, max: 300 },
+        { kind: "list", key: "people", label: "Спикеры", item: "спикера", title: "name", addTo: "end", fields: speakerFields },
+        { kind: "textarea", key: "caption", label: "Плашка под спикерами", required: true, rows: 2, max: 300 },
+      ],
+    },
+    {
+      kind: "group",
+      key: "reviews",
+      label: "Отзывы выпускников",
+      fields: [
+        { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+        { kind: "list", key: "items", label: "Отзывы", item: "отзыв", title: "name", subtitle: "role", addTo: "end", fields: videoReviewFields() },
+      ],
+    },
+    {
+      kind: "group",
+      key: "price",
+      label: "Стоимость и заявка",
+      fields: [
+        { kind: "textarea", key: "title", label: "Заголовок", required: true, rows: 2, max: 200 },
+        { kind: "textarea", key: "text", label: "Текст", required: true, rows: 3, max: 1000 },
+        {
+          kind: "group",
+          key: "course",
+          label: "Цена курса",
+          fields: [
+            { kind: "text", key: "label", label: "Подпись", required: true, max: 80 },
+            { kind: "text", key: "value", label: "Сумма", required: true, max: 20 },
+            { kind: "text", key: "unit", label: "Единица", required: true, max: 20 },
+            { kind: "text", key: "note", label: "Примечание", required: true, max: 120 },
+            { kind: "text", key: "full", label: "Полная стоимость", required: true, max: 120 },
+          ],
+        },
+        {
+          kind: "group",
+          key: "answer",
+          label: "Плашка «дорого или НЕ дорого»",
+          fields: [
+            { kind: "text", key: "label", label: "Подпись", required: true, max: 80 },
+            { kind: "strings", key: "lines", label: "Строки", item: "строку", rows: 1, min: 1 },
+            { kind: "text", key: "link", label: "Текст ссылки", required: true, max: 80 },
+            { kind: "url", key: "href", label: "Ссылка на видео-ответ", required: true },
+          ],
+        },
+        { kind: "textarea", key: "installment", label: "Ссылка о рассрочке", required: true, rows: 2, max: 300 },
+      ],
+    },
+    {
+      kind: "group",
+      key: "results",
+      label: "Результаты курса",
+      fields: [
+        { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+        { kind: "strings", key: "items", label: "Результаты", item: "результат", rows: 2, min: 1 },
+      ],
+    },
+    {
+      kind: "group",
+      key: "faq",
+      label: "Частые вопросы",
+      fields: [
+        { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
+        {
+          kind: "list",
+          key: "items",
+          label: "Вопросы",
+          item: "вопрос",
+          title: "q",
+          addTo: "end",
+          fields: [
+            { kind: "text", key: "q", label: "Вопрос", required: true, max: 200 },
+            { kind: "textarea", key: "a", label: "Ответ", required: true, rows: 3, max: 3000 },
+            { kind: "text", key: "watch", label: "Кнопка видео после ответа (необязательно)", max: 40, placeholder: "Смотри!" },
+          ],
+        },
+        { kind: "url", key: "video", label: "Видео для кнопки в ответе", hint: "Ссылка на Vimeo / Rutube / YouTube." },
+      ],
+    },
+  ],
+  defaults: {
+    word: K.word,
+    hero: { badges: [...K.hero.badges], title: K.hero.title, lead: K.hero.lead, cta: [...K.hero.cta] },
+    unique: {
+      curatorPhoto: img(CURATOR.photo, 1102, 1280, CURATOR.name),
+      curatorName: CURATOR.name,
+      curatorRole: CURATOR.role ?? "",
+      curatorBio: CURATOR.bio,
+      title: K.unique.title,
+      intro: K.unique.intro,
+      points: [...K.unique.points],
+      bonus: K.unique.bonus,
+      outro: K.unique.outro,
+      toReviews: K.unique.toReviews,
+    },
+    program: {
+      title: K.program.title,
+      book: K.program.book,
+      lead: K.program.lead,
+      toModule: K.program.toModule,
+      toCourse: K.program.toCourse,
+      items: K.program.items.map((it) => ({
+        title: it.title,
+        text: "text" in it ? (it.text ?? "") : "",
+        points: "points" in it ? [...(it.points ?? [])] : [],
+        summary: "summary" in it ? (it.summary ?? "") : "",
+        note: "note" in it ? (it.note ?? "") : "",
+        module: "module" in it ? (it.module ?? "") : "",
+      })),
+    },
+    speakers: {
+      title: K.speakers.title,
+      leadBefore: K.speakers.lead[0],
+      leadLink: K.speakers.lead[1],
+      leadAfter: K.speakers.lead[2],
+      people: SPEAKERS.map(speakerOf),
+      caption: K.speakers.caption,
+    },
+    reviews: { title: K.reviews.title, items: GRADUATES.map((r) => reviewOf(r, false)) },
+    price: {
+      title: K.price.title,
+      text: K.price.text,
+      course: { ...K.price.course },
+      answer: { label: K.price.answer.label, lines: [...K.price.answer.lines], link: K.price.answer.link, href: K.price.answer.href },
+      installment: K.price.installment,
+    },
+    results: { title: K.results.title, items: [...K.results.items] },
+    faq: {
+      title: K.faq.title,
+      items: K.faq.items.map((f) => ({ q: f.q, a: f.a, watch: "watch" in f ? f.watch : "" })),
+      video: K.faq.video,
+    },
+  },
+});
+
 /** Усі розділи — для меню адмінки */
 export const CONTENT = [
   homeContent,
+  kursContent,
+  knigaContent,
+  otzyvyContent,
+  politikaContent,
   teamContent,
   nagradyContent,
   uslugiContent,

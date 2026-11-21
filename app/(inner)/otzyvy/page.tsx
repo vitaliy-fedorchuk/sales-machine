@@ -2,18 +2,20 @@ import type { Metadata } from "next";
 import BackLink from "@/components/inner/BackLink";
 import SocialFooter from "@/components/inner/SocialFooter";
 import Reviews from "@/components/otzyvy/Reviews";
-import { OTZYVY_PAGE as P } from "@/lib/pages/otzyvy";
+import { getContent } from "@/lib/content";
+import { toReview } from "@/lib/content/reviews";
 
 export const metadata: Metadata = {
   title: "Отзывы — Sales Machine",
   description: "Видеоотзывы клиентов Sales Machine: голоса, которые громче любой рекламы.",
 };
 
-export default function OtzyvyPage() {
+export default async function OtzyvyPage() {
+  const P = await getContent("otzyvy");
   return (
     <>
       <BackLink word={P.word} />
-      <Reviews footer={<SocialFooter />} />
+      <Reviews title={P.title} reviews={P.reviews.map(toReview)} footer={<SocialFooter />} />
     </>
   );
 }

@@ -11,7 +11,8 @@ export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   // В адмінці плаваючий перемикач не показуємо (вона бере тему, вибрану на сайті)
-  const admin = usePathname().startsWith("/admin");
+  const pathname = usePathname();
+  const admin = pathname.startsWith("/admin");
 
   const toggle = () => {
     const isDark = document.documentElement.dataset.theme === "dark";
@@ -23,7 +24,7 @@ export default function ThemeToggle() {
   return (
     <button
       type="button"
-      className={styles.toggle}
+      className={`${styles.toggle} ${pathname === "/" ? "" : styles.inner}`}
       aria-pressed={mounted ? resolvedTheme === "dark" : undefined}
       onClick={toggle}
     >

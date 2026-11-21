@@ -11,7 +11,10 @@ import { KursButton, SectionLink } from "@/components/kurs/KursAction";
 import KursDialogs from "@/components/kurs/KursDialogs";
 import KursNav from "@/components/kurs/KursNav";
 import LeadForm from "@/components/kurs/LeadForm";
-import { CURATOR, GRADUATES, KAIF_VIDEO, KURS_FORMS, KURS_PAGE as K, SPEAKERS, type Speaker } from "@/lib/pages/kurs";
+import { getContent } from "@/lib/content";
+import { toReview } from "@/lib/content/reviews";
+import { KAIF_VIDEO as KAIF_DEFAULT, KURS_FORMS, KURS_PAGE, type Speaker } from "@/lib/pages/kurs";
+import { toEmbed } from "@/lib/video";
 import styles from "./kurs.module.css";
 
 export const metadata: Metadata = {
@@ -51,22 +54,40 @@ function PersonCard({ s, className, eager }: { s: Speaker; className?: string; e
   );
 }
 
-export default function KursPage() {
+export default async function KursPage() {
+  // Вміст — з адмінки («Курс»); навігація по розділах і тексти форм — з коду
+  const C = await getContent("kurs");
+  const K = {
+    ...C,
+    nav: KURS_PAGE.nav,
+    speakers: { ...C.speakers, lead: [C.speakers.leadBefore, C.speakers.leadLink, C.speakers.leadAfter] },
+  };
+  const CURATOR: Speaker = {
+    id: "boev", // для куратора в попапі є кнопка «Связаться со мной»
+    name: C.unique.curatorName,
+    role: C.unique.curatorRole,
+    photo: C.unique.curatorPhoto.src,
+    bio: C.unique.curatorBio,
+  };
+  const SPEAKERS: Speaker[] = C.speakers.people.map((p, i) => ({ id: `s${i}`, name: p.name, role: p.role || undefined, photo: p.photo.src, bio: p.bio, book: p.book }));
+  const GRADUATES = C.reviews.items.map(toReview);
+  const KAIF_VIDEO = { ...KAIF_DEFAULT, video: C.faq.video ? toEmbed(C.faq.video) : KAIF_DEFAULT.video };
+
   const program = K.program.items.map((it) => ({
     title: it.title,
     body: (
       <>
-        {"text" in it && it.text && <p>{it.text}</p>}
-        {"points" in it && it.points && (
+        {it.text && <p>{it.text}</p>}
+        {it.points.length > 0 && (
           <ul className={`${styles.points} ${styles.strong}`}>
             {it.points.map((p) => (
               <li key={p}>{p}</li>
             ))}
           </ul>
         )}
-        {"summary" in it && it.summary && <p className={styles.summary}>{it.summary}</p>}
-        {"note" in it && it.note && <p className={styles.note}>{it.note}</p>}
-        {"module" in it && it.module && (
+        {it.summary && <p className={styles.summary}>{it.summary}</p>}
+        {it.note && <p className={styles.note}>{it.note}</p>}
+        {it.module && (
           <div className={styles.moduleBtns}>
             <KursButton dialog={{ kind: "form", form: "module", topic: `${it.module} курса «Иммерсивный маркетинг»` }} className={styles.btnLine}>
               {K.program.toModule}
@@ -85,7 +106,7 @@ export default function KursPage() {
     body: (
       <p>
         {f.a}
-        {"watch" in f && (
+        {f.watch && C.faq.video && (
           <>
             {" "}
             <KursButton dialog={{ kind: "video", review: KAIF_VIDEO }} className={styles.watch}>
