@@ -1,22 +1,22 @@
 .layout {
   display: grid;
-  grid-template-columns: 230px 1fr;
-  gap: 50px;
+  grid-template-columns: 14.375rem 1fr;
+  gap: 3.125rem;
   align-items: start;
-  padding-top: 40px;
+  padding-top: 2.5rem;
 }
 
 /* ---------- липкий зміст ---------- */
 .index {
   position: sticky;
-  top: 120px;
+  top: 7.5rem;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 1.125rem;
 }
 
 .indexHead {
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mute);
@@ -33,11 +33,11 @@
 
 .indexItem {
   display: grid;
-  grid-template-columns: 26px 1fr auto;
+  grid-template-columns: 1.625rem 1fr auto;
   align-items: baseline;
-  gap: 10px;
+  gap: 0.625rem;
   width: 100%;
-  padding: 13px 0;
+  padding: 0.8125rem 0;
   border: 0;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
   background: none;
@@ -49,12 +49,12 @@
 }
 
 .indexNum {
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.06em;
 }
 
 .indexLabel {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.2;
 }
@@ -69,11 +69,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 5px;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.3125rem;
   border: 1px solid currentColor;
-  font: 600 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 600 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
@@ -86,8 +86,8 @@
 .headCount {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  gap: 0.5rem;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink);
@@ -95,32 +95,32 @@
 
 /* активний пункт зсувається, як рядок у фокусі на головній */
 .indexActive {
-  padding-left: 10px;
+  padding-left: 0.625rem;
 }
 
 .indexItem:focus-visible {
   outline: 1px solid var(--ink);
-  outline-offset: 2px;
+  outline-offset: 0.125rem;
 }
 
 /* ---------- розділи ---------- */
 .sections {
   display: flex;
   flex-direction: column;
-  gap: 90px;
+  gap: 5.625rem;
   min-width: 0;
 }
 
 .section {
-  scroll-margin-top: 110px;
+  scroll-margin-top: 6.875rem;
 }
 
 .head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 1.25rem;
+  margin-bottom: 1.875rem;
 }
 
 .head h2 {
@@ -134,7 +134,7 @@
 @media (max-width: 991px) {
   .layout {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 1.875rem;
   }
   /* на планшеті/телефоні зміст — рядок міток, що гортається */
   .index {
@@ -142,19 +142,19 @@
   }
   .indexList {
     flex-direction: row;
-    gap: 8px;
+    gap: 0.5rem;
     overflow-x: auto;
     border: 0;
     scrollbar-width: none;
   }
   .indexItem {
     grid-template-columns: auto auto auto;
-    padding: 10px 14px;
+    padding: 0.625rem 0.875rem;
     border: 1px solid var(--ink);
     white-space: nowrap;
   }
   .indexActive {
-    padding-left: 14px;
+    padding-left: 0.875rem;
     background: var(--ink);
     color: var(--bg);
   }
@@ -165,10 +165,10 @@
     color: var(--ink);
   }
   .indexLabel {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .sections {
-    gap: 70px;
+    gap: 4.375rem;
   }
 }
 

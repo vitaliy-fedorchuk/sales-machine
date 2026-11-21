@@ -24,11 +24,13 @@
   visibility: hidden;
 }
 
+/* Назва сторінки — шрифтом заголовків (Manrope → згодом Gilroy), без дужок:
+   у моноширинному широкі кириличні літери (Ы, Ш, Ж) виглядали стиснутими. */
 .label {
-  padding: 0 16px;
+  padding: 0 1rem;
   color: var(--bg);
-  font: 500 clamp(22px, 3.5vw, 40px) / 1.2 var(--font-mono), ui-monospace, monospace;
-  letter-spacing: 0.04em;
+  font: 700 clamp(1.875rem, 5vw, 4.5rem) / 1.1 var(--font-main), system-ui, sans-serif;
+  letter-spacing: 0.01em;
   text-align: center;
   text-transform: uppercase;
   visibility: hidden;

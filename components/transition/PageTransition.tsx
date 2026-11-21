@@ -144,9 +144,7 @@ export default function PageTransition() {
     <div className={styles.wrap} aria-hidden="true">
       <div ref={panelRef} className={styles.panel}>
         <span ref={labelRef} className={styles.label}>
-          <span>[ </span>
           <span ref={textRef} />
-          <span> ]</span>
         </span>
       </div>
     </div>

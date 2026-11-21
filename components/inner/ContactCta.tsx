@@ -7,6 +7,10 @@ import { CONTACTS } from "@/lib/contacts";
 import { getLenis } from "./SmoothScroll";
 import styles from "./ContactCta.module.css";
 
+const OPEN_EVENT = "sm:contact-open";
+/** Відкрити попап «Привет, это Вадим» сторінки з будь-якого компонента. */
+export const openContact = () => window.dispatchEvent(new CustomEvent(OPEN_EVENT, { cancelable: true }));
+
 const COLS = 8;
 const ROWS = 4;
 
@@ -26,7 +30,7 @@ const MOVES: [number, number, number][] = [
 ];
 
 const PIECES = MOVES.slice(0, COLS * ROWS).map(
-  ([x, y, z]) => ({ "--x": `${x}%`, "--y": `${y}%`, "--z": `${z}px` }) as CSSProperties,
+  ([x, y, z]) => ({ "--x": `${x}%`, "--y": `${y}%`, "--z": `${z / 16}rem` }) as CSSProperties,
 );
 
 /** Кнопка «3D-розліт» (як в оригіналі) і попап «Привет, это Вадим». */
@@ -39,8 +43,20 @@ export default function ContactCta({ label, title, text }: { label: string; titl
   useEffect(() => {
     const d = dialogRef.current!;
     const onClose = () => getLenis()?.start();
+    // Попап можна відкрити з будь-якого місця сторінки: openContact() (напр. «Давайте обсудим» в услугах).
+    // Слухає лише перший екземпляр на сторінці, щоб не відкрилось два вікна.
+    const onOpen = (e: Event) => {
+      if (d.open || (e as CustomEvent).defaultPrevented) return;
+      e.preventDefault();
+      getLenis()?.stop();
+      d.showModal();
+    };
     d.addEventListener("close", onClose);
-    return () => d.removeEventListener("close", onClose);
+    window.addEventListener(OPEN_EVENT, onOpen);
+    return () => {
+      d.removeEventListener("close", onClose);
+      window.removeEventListener(OPEN_EVENT, onOpen);
+    };
   }, []);
 
   // Нахил сітки за курсором — як в оригіналі («d-86-button-mouse-move»):

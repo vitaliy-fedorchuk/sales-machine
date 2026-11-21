@@ -1,0 +1,24 @@
+/* Лічильники під заголовком: «53 публикации · 11 лет · 2016–2026» */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin: 0;
+}
+
+/* вміст по центру по вертикалі — і там, де є велика цифра, і в «2016–2026» без неї */
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--ink);
+  font: 500 0.8125rem/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.stat b {
+  font: 700 1.5rem/1 var(--font-main), system-ui, sans-serif;
+  letter-spacing: 0;
+}

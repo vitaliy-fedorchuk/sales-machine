@@ -7,18 +7,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 36px;
+  gap: 2.25rem;
   width: 100%;
-  perspective: 1400px;
+  perspective: 87.5rem;
 }
 
 /* сама книга — кнопка (клік перевертає) */
 .stage {
-  --w: min(400px, 70vw);
+  --w: min(25rem, 70vw);
   --h: calc(var(--w) * var(--ratio, 1.38));
   --t: calc(var(--w) * 0.1);
   --c: calc(var(--w) * 0.013); /* товщина палітурки */
-  --o: 4px;                    /* наскільки палітурка виступає за сторінки */
+  --o: 0.25rem;                    /* наскільки палітурка виступає за сторінки */
   --cover: #1f3a2c;    /* колір палітурки (зелена обкладинка) */
   --gold: #d6b46a;
   --paper: #f3efe6;
@@ -36,7 +36,7 @@
 
 .stage:focus-visible {
   outline: 1px solid var(--ink);
-  outline-offset: 16px;
+  outline-offset: 1rem;
 }
 
 .book {
@@ -56,7 +56,7 @@
 }
 
 .hint {
-  font: 500 11px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.6875rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--mute);
@@ -73,7 +73,7 @@
 
 .front {
   transform: translateZ(calc(var(--t) / 2));
-  border-radius: 2px 4px 4px 2px;
+  border-radius: 0.125rem 0.25rem 0.25rem 0.125rem;
   overflow: hidden;
 }
 
@@ -96,7 +96,7 @@
 
 .back {
   transform: rotateY(180deg) translateZ(calc(var(--t) / 2));
-  border-radius: 4px 2px 2px 4px;
+  border-radius: 0.25rem 0.125rem 0.125rem 0.25rem;
   overflow: hidden;
   background: var(--cover);
 }
@@ -191,7 +191,7 @@
 .top,
 .bottom {
   background-color: var(--paper);
-  background-image: repeating-linear-gradient(var(--dir, 90deg), rgb(0 0 0 / 0.07) 0 1px, transparent 1px 3px);
+  background-image: repeating-linear-gradient(var(--dir, 90deg), rgb(0 0 0 / 0.07) 0 1px, transparent 1px 0.1875rem);
 }
 
 /* Блок сторінок — між палітурками (глибина t − 2c) і трохи втоплений від країв (--o). */
@@ -268,7 +268,7 @@
   height: calc(var(--h) * 0.08);
   border-radius: 50%;
   background: rgb(0 0 0 / 0.35);
-  filter: blur(14px);
+  filter: blur(0.875rem);
   transform: translateZ(calc(var(--t) * -2));
 }
 
@@ -278,6 +278,6 @@
 
 @media (max-width: 479px) {
   .stage {
-    --w: min(290px, 68vw);
+    --w: min(18.125rem, 68vw);
   }
 }

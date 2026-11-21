@@ -76,9 +76,13 @@ export default function Spiral({ items }: Props) {
       }
     };
     measureWidest();
-    const fitFs = () => (widest > 0 ? ((vw - vw * cfg.left - 16) / widest) * 100 : Infinity);
+    // Масштаб кореня («гумова» верстка): 1rem = 16px на 1440 / 390 — розміри стрічки множаться на нього.
+    const rootScale = () => parseFloat(getComputedStyle(document.documentElement).fontSize) / 16 || 1;
+    let rs = rootScale();
+    const scaled = () => ({ ...cfg, fontSize: cfg.fontSize * rs, step: cfg.step * rs });
+    const fitFs = () => (widest > 0 ? ((vw - vw * cfg.left - 16 * rs) / widest) * 100 : Infinity);
 
-    let lay: Layout = computeLayout(items, vw, cfg, fitFs());
+    let lay: Layout = computeLayout(items, vw, scaled(), fitFs());
 
     let cur = 0;
     let target = 0;
@@ -93,7 +97,8 @@ export default function Spiral({ items }: Props) {
       vh = innerHeight;
       fy = vh * cfg.focus;
       left = vw * cfg.left;
-      lay = computeLayout(items, vw, cfg, fitFs());
+      rs = rootScale();
+      lay = computeLayout(items, vw, scaled(), fitFs());
       // Зберегти положення стрічки: та сама частка циклу, потім доводка.
       const k = lay.L / prev.L;
       cur = (cur + prevFy) * k - fy;
@@ -111,8 +116,8 @@ export default function Spiral({ items }: Props) {
         info.style.transform = "";
         info.style.setProperty("--info-left", `${left}px`);
       } else {
-        const ix = Math.min(Math.max(left + lay.fs * 4.2, vw * 0.55), vw - 320);
-        info.style.transform = `translate3d(${ix}px,${fy - 14}px,0)`;
+        const ix = Math.min(Math.max(left + lay.fs * 4.2, vw * 0.55), vw - 320 * rs);
+        info.style.transform = `translate3d(${ix}px,${fy - 14 * rs}px,0)`;
       }
     }
 
@@ -281,7 +286,7 @@ export default function Spiral({ items }: Props) {
       for (const el of infoParts) {
         el.animate(
           [
-            { opacity: 0, transform: "translateY(14px) rotateX(-40deg)" },
+            { opacity: 0, transform: "translateY(0.875rem) rotateX(-40deg)" },
             { opacity: 1, transform: "none" },
           ],
           { duration: 550, easing: "cubic-bezier(.2,.8,.2,1)" },
@@ -378,7 +383,7 @@ export default function Spiral({ items }: Props) {
             const label = pad(row.i + 1);
             if (num.key !== label) { num.key = label; num.el.textContent = label; }
             show(num, true);
-            num.el.style.transform = `translate3d(${left - 34}px,${(center - 6).toFixed(2)}px,0)`;
+            num.el.style.transform = `translate3d(${left - 34 * rs}px,${(center - 6 * rs).toFixed(2)}px,0)`;
             let op = 1 - Math.min(1, Math.abs(p.a) / 90) * 0.85;
             op *= 1 - 0.6 * dim * (1 - h);
             op += (1 - op) * h;

@@ -6,10 +6,10 @@
 .scene {
   /* translate/filter — окремо від transform, яким керує GSAP у переходах між сторінками */
   transition: translate 0.7s cubic-bezier(0.625, 0.05, 0, 1), filter 0.7s cubic-bezier(0.625, 0.05, 0, 1);
-  --max: 1280px;
-  --pad-l: max(84px, calc((100% - var(--max)) / 2));
-  --pad-r: max(40px, calc((100% - var(--max)) / 2));
-  --axis-x: calc(var(--pad-l) - 32px);
+  --max: 80rem;
+  --pad-l: max(5.25rem, calc((100% - var(--max)) / 2));
+  --pad-r: max(2.5rem, calc((100% - var(--max)) / 2));
+  --axis-x: calc(var(--pad-l) - 2rem);
   position: relative;
   min-height: 100vh;
 }
@@ -18,9 +18,9 @@
    й віддати місце контенту. */
 @media (max-width: 767px) {
   .scene {
-    --pad-l: 38px;
-    --pad-r: 20px;
-    --axis-x: 16px;
+    --pad-l: 2.375rem;
+    --pad-r: 1.25rem;
+    --axis-x: 1rem;
   }
 }
 
@@ -44,10 +44,10 @@
 
 .num {
   position: absolute;
-  left: calc(var(--axis-x) - 50px);
-  width: 36px;
+  left: calc(var(--axis-x) - 3.125rem);
+  width: 2.25rem;
   transform: translateY(-50%);
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.06em;
   text-align: right;
   color: var(--ink);
@@ -58,11 +58,11 @@
   .num {
     left: var(--axis-x);
     width: auto;
-    padding: 2px 0;
+    padding: 0.125rem 0;
     /* по центру лінії, над кружечком */
-    transform: translate(-50%, calc(-100% - 8px));
+    transform: translate(-50%, calc(-100% - 0.5rem));
     background: var(--bg);
-    font-size: 10px;
+    font-size: 0.625rem;
     text-align: center;
     transition: color 0.6s ease, background 0.6s ease;
   }
@@ -71,9 +71,9 @@
 .dot {
   position: absolute;
   left: var(--axis-x);
-  width: 9px;
-  height: 9px;
-  margin: -5px 0 0 -4px;
+  width: 0.5625rem;
+  height: 0.5625rem;
+  margin: -0.3125rem 0 0 -0.25rem;
   border: 1px solid var(--ink);
   border-radius: 50%;
   background: var(--bg);

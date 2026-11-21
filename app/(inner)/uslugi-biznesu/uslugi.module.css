@@ -1,0 +1,49 @@
+/* «Как формируется цена» — абзац + три кроки з моно-номерами */
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.875rem;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ink);
+  font-size: 1.125rem;
+  line-height: 1.45;
+}
+
+.stepNum {
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+}
+
+.outro {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 767px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 479px) {
+  .steps li {
+    font-size: 1rem;
+  }
+}

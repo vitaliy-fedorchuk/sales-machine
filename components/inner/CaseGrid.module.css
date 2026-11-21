@@ -1,7 +1,7 @@
 .cases {
   position: relative;
   z-index: 1;
-  padding-top: 20px;
+  padding-top: 1.25rem;
   pointer-events: none;
 }
 
@@ -10,13 +10,13 @@
 }
 
 .cases h2 {
-  margin-bottom: 30px;
+  margin-bottom: 1.875rem;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 1.875rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -30,9 +30,9 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.25rem;
   min-height: 100%;
-  padding: 30px;
+  padding: 1.875rem;
   border: 1px solid var(--ink);
   color: var(--ink);
   text-decoration: none;
@@ -59,13 +59,13 @@
 }
 
 .num {
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.06em;
   color: var(--mute);
 }
 
 .title {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.2;
 }
@@ -85,8 +85,8 @@
 }
 
 .card:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
+  outline: 0.125rem solid var(--ink);
+  outline-offset: 0.1875rem;
 }
 
 @media (max-width: 991px) {
@@ -94,7 +94,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
   .title {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 }
 
@@ -103,21 +103,21 @@
     grid-template-columns: 1fr;
   }
   .title {
-    font-size: 19px;
+    font-size: 1.1875rem;
   }
 }
 
 @media (max-width: 479px) {
   .cases h2 {
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
   }
   .grid {
-    gap: 20px;
+    gap: 1.25rem;
   }
   .card {
-    padding: 20px;
+    padding: 1.25rem;
   }
   .title {
-    font-size: 21px;
+    font-size: 1.3125rem;
   }
 }

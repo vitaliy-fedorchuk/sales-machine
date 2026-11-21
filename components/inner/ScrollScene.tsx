@@ -36,9 +36,10 @@ export default function ScrollScene({ children, className }: { children: ReactNo
 
     const layout = () => {
       const top0 = root.getBoundingClientRect().top;
+      const rs = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16 || 1;
       for (const m of marks) {
         const r = m.el.getBoundingClientRect();
-        const y = Math.round(r.top - top0 + Math.min(r.height / 2, 28));
+        const y = Math.round(r.top - top0 + Math.min(r.height / 2, 28 * rs));
         m.num.style.top = m.dot.style.top = `${y}px`;
       }
       update();

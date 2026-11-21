@@ -2,15 +2,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
-  padding: 100px 0 60px;
+  gap: 2.5rem;
+  padding: 6.25rem 0 3.75rem;
 }
 
 .list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 1.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -20,9 +20,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
-  height: 54px;
-  margin: 10px;
+  width: 3.375rem;
+  height: 3.375rem;
+  margin: 0.625rem;
   border: 1px solid var(--ink);
   border-radius: 50%;
   /* як в оригіналі: оберт на 360° і +10% за 300 мс, назад — так само */
@@ -36,8 +36,8 @@
 
 /* Іконка — маска з SVG, колір від теми */
 .icon {
-  width: 26px;
-  height: 26px;
+  width: 1.625rem;
+  height: 1.625rem;
   background: var(--ink);
   -webkit-mask: var(--icon) center / contain no-repeat;
   mask: var(--icon) center / contain no-repeat;
@@ -52,7 +52,7 @@
 }
 
 .privacy {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--mute);
   text-decoration: none;
 }
@@ -69,15 +69,15 @@
 
 @media (max-width: 479px) {
   .footer {
-    gap: 30px;
-    padding-top: 60px;
+    gap: 1.875rem;
+    padding-top: 3.75rem;
   }
   .list {
-    gap: 12px;
+    gap: 0.75rem;
   }
   .link {
-    width: 45px;
-    height: 45px;
+    width: 2.8125rem;
+    height: 2.8125rem;
     margin: 0;
   }
 }

@@ -4,14 +4,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 22px;
+  gap: 0.625rem 1.375rem;
 }
 
 .play,
 .link {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 0.5625rem;
   padding: 0;
   border: 0;
   background: none;
@@ -22,7 +22,7 @@
 }
 
 .play {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -39,7 +39,7 @@
 }
 
 .link {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--mute);
 }
 
@@ -77,19 +77,19 @@
 .play:focus-visible,
 .link:focus-visible {
   outline: 1px solid var(--ink);
-  outline-offset: 4px;
+  outline-offset: 0.25rem;
 }
 
 /* моно-номер відгуку */
 .num {
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.08em;
   color: var(--mute);
 }
 
 .name {
   margin: 0;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
   line-height: 1.2;
   text-transform: uppercase;
@@ -97,13 +97,13 @@
 
 .role {
   margin: 0;
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.4;
 }
 
 .text {
   margin: 0;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-style: italic;
   line-height: 1.5;
   color: color-mix(in srgb, var(--ink) 78%, var(--bg));

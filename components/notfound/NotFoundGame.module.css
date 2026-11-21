@@ -15,13 +15,13 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 2.5rem;
   /* праворуч місце під перемикач теми */
-  padding: 24px 220px 0 48px;
+  padding: 1.5rem 13.75rem 0 3rem;
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   text-decoration: none;
@@ -30,18 +30,18 @@
 
 .links {
   display: flex;
-  gap: 28px;
+  gap: 1.75rem;
 }
 
 .link {
-  font-size: 18px;
+  font-size: 1.125rem;
   text-decoration: none;
 }
 
 .link:hover,
 .logo:hover {
   text-decoration: underline;
-  text-underline-offset: 4px;
+  text-underline-offset: 0.25rem;
 }
 
 /* ---------- 404 ---------- */
@@ -59,8 +59,8 @@
 }
 
 .eyebrow {
-  margin: 0 0 18px;
-  font: 500 14px/1 var(--font-mono), ui-monospace, monospace;
+  margin: 0 0 1.125rem;
+  font: 500 0.875rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--mute);
@@ -80,16 +80,16 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 2px;
+  height: 0.125rem;
   opacity: 0;
   pointer-events: none;
   transform-origin: 0 50%;
-  background: repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 14px);
+  background: repeating-linear-gradient(90deg, var(--ink) 0 0.5rem, transparent 0.5rem 0.875rem);
 }
 
 .controls {
   position: absolute;
-  bottom: 150px;
+  bottom: 9.375rem;
   left: 0;
   z-index: 10;
   display: flex;
@@ -109,7 +109,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   cursor: grab;
   touch-action: none;
   will-change: transform;
@@ -119,8 +119,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
+  width: 3.5rem;
+  height: 3.5rem;
   border: 1px solid var(--ink);
   background: var(--bg);
   transition: background 0.3s ease, transform 0.3s ease;
@@ -150,7 +150,7 @@
 }
 
 .pullText {
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--mute);
@@ -159,7 +159,7 @@
 
 .rocket {
   position: absolute;
-  width: 34px;
+  width: 2.125rem;
   opacity: 0;
   pointer-events: none;
   will-change: transform;
@@ -195,20 +195,20 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 44px;
-  height: 44px;
+  width: 2.75rem;
+  height: 2.75rem;
   pointer-events: none;
 }
 
 /* ---------- лічильник ---------- */
 .counter {
   position: absolute;
-  bottom: 40px;
+  bottom: 2.5rem;
   left: 0;
   width: 100%;
   margin: 0;
   text-align: center;
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--mute);
@@ -217,9 +217,9 @@
 /* ---------- конфеті ---------- */
 .dot {
   position: absolute;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: -0.4375rem 0 0 -0.4375rem;
   pointer-events: none;
 }
 
@@ -238,15 +238,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  max-width: calc(100vw - 32px);
-  padding: 44px 52px;
+  gap: 0.75rem;
+  max-width: calc(100vw - 2rem);
+  padding: 2.75rem 3.25rem;
   border: 1px solid var(--ink);
   background: var(--bg);
   text-align: center;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(32px) scale(0.92);
+  transform: translateY(2rem) scale(0.92);
   transition: 0.45s cubic-bezier(0.65, 0, 0, 1);
 }
 
@@ -261,21 +261,21 @@
 }
 
 .scoreNum {
-  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
   letter-spacing: 0.1em;
   color: var(--mute);
 }
 
 .scoreTitle {
   margin: 0;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .scoreText {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem;
   color: var(--mute);
 }
 
@@ -285,16 +285,16 @@
 
 .scoreActions {
   display: flex;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 0.625rem;
+  margin-top: 1.125rem;
 }
 
 .btn {
-  padding: 14px 22px;
+  padding: 0.875rem 1.375rem;
   border: 1px solid var(--ink);
   background: var(--ink);
   color: var(--bg);
-  font: 500 15px/1 var(--font-main), system-ui, sans-serif;
+  font: 500 0.9375rem/1 var(--font-main), system-ui, sans-serif;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   text-decoration: none;
@@ -318,7 +318,7 @@
     font-size: 40vw;
   }
   .nav {
-    padding: 20px 200px 0 24px;
+    padding: 1.25rem 12.5rem 0 1.5rem;
   }
 }
 
@@ -327,22 +327,22 @@
     display: none;
   }
   .nav {
-    padding: 16px 180px 0 16px;
+    padding: 1rem 11.25rem 0 1rem;
   }
   .logo {
-    font-size: 17px;
+    font-size: 1.0625rem;
   }
   .controls {
-    bottom: 120px;
+    bottom: 7.5rem;
   }
   .fly {
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
   }
   .scoreBox {
-    padding: 32px 24px;
+    padding: 2rem 1.5rem;
   }
   .scoreTitle {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
