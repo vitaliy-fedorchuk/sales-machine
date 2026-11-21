@@ -11,3 +11,7 @@ next-env.d.ts
 task/**/*.zip
 
 .vercel
+
+# Локальні фото з адмінки та згенерований клієнт Prisma
+/uploads
+/lib/generated

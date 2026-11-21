@@ -10,8 +10,11 @@
   grid-auto-flow: column;
   grid-auto-columns: calc((100% - 1.25rem) / 2);
   column-gap: 1.25rem;
-  margin: 0;
-  padding: 0;
+  /* 1px запасу з боків: картка «прилипає» не до самого краю області прокрутки, а за 1px від нього —
+     інакше при дробових розмірах (rem) її ліва рамка потрапляє на межу обрізання й зникає */
+  margin: 0 -1px;
+  padding: 0 1px;
+  scroll-padding-inline: 1px;
   list-style: none;
   overflow-x: auto;
   overscroll-behavior-x: contain;

@@ -7,4 +7,8 @@ const NAMES: Record<string, string> = {
 };
 
 /** Назва сторінки для панелі переходу (аналог data-page-name). */
-export const pageName = (pathname: string) => NAMES[pathname.replace(/\/$/, "") || "/"] ?? "Sales Machine";
+export const pageName = (pathname: string) => {
+  const p = pathname.replace(/\/$/, "") || "/";
+  if (p.startsWith("/stati/")) return "Кейс";
+  return NAMES[p] ?? "Sales Machine";
+};

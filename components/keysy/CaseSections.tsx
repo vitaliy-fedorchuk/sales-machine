@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getLenis } from "@/components/inner/SmoothScroll";
 import page from "@/components/inner/page.module.css";
-import { CASES, CATEGORIES } from "@/lib/pages/keysy";
+import { CATEGORIES, type Case } from "@/lib/pages/keysy";
 import CaseCard from "./CaseCard";
 import grid from "./keysy.module.css";
 import styles from "./CaseSections.module.css";
@@ -18,15 +18,15 @@ const plural = (n: number) => {
 };
 
 // Кожен кейс — один раз, у своїй першій категорії (інші видно в підписі картки).
-const GROUPS = CATEGORIES.map((c) => ({ ...c, items: CASES.filter((it) => it.cats[0] === c.id) })).filter(
-  (g) => g.items.length > 0,
-);
+const groupsOf = (cases: readonly Case[]) =>
+  CATEGORIES.map((c) => ({ ...c, items: cases.filter((it) => it.cats[0] === c.id) })).filter((g) => g.items.length > 0);
 
 /**
  * Кейси без фільтра: згруповані розділами на осі (02 Маркетинг, 03 Креатив …),
  * ліворуч — липкий зміст з кількістю кейсів: клік плавно веде до розділу, поточний підсвічується.
  */
-export default function CaseSections() {
+export default function CaseSections({ cases }: { cases: readonly Case[] }) {
+  const GROUPS = useMemo(() => groupsOf(cases), [cases]);
   const [active, setActive] = useState<string>(GROUPS[0].id);
   const sectionsRef = useRef<Map<string, HTMLElement>>(new Map());
 

@@ -42,7 +42,7 @@
   /* --fade (1 → 0 за перші ~20rem скролу) задає WordFade.tsx */
   opacity: var(--fade, 1);
   translate: 0 calc((1 - var(--fade, 1)) * -2.5rem);
-  transition: color 0.45s ease, opacity 0.35s ease, translate 0.35s ease;
+  transition: color 0.45s ease, opacity 0.15s linear, translate 0.25s ease;
 }
 
 /* Наведення на «назад»: контент сторінки розмивається й відсувається вправо,
