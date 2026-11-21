@@ -1,5 +1,5 @@
 // Публікації в СМИ (перенесено з sales-machine.team/stati-v-smi). Пізніше — з CMS.
-// Внутрішні статті (/stati…) поки ведуть на старий сайт — розділу статей тут ще немає.
+// Внутрішні статті (/stati…) поки ведуть на старий сайт.
 
 export type Article = { year: string; title: string; href: string };
 
@@ -69,3 +69,21 @@ export const ARTICLES: readonly Article[] = [
   { year: "2016", title: "Круглый стол в пресс-центре губернатора", href: "https://don24.ru/rubric/ekonomika/rostovchane-vybirayut-kvartiry-kak-moskvichi.html#:~:text=%C2%AB%D0%92%20%D1%8D%D0%BA%D0%BE%D0%BD%D0%BE%D0%BC-%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B5,%D0%BF%D0%BE%D1%8F%D1%81%D0%BD%D0%B8%D0%BB%20%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE" },
   { year: "2016", title: "Региональные особенности и прогноз на 2017", href: "https://rg.ru/2016/11/22/reg-ufo/pochemu-na-iuge-rossii-silno-podeshevela-nedvizhimost.html#:~:text=-%20%D0%92%20%D0%BA%D0%B0%D0%B6%D0%B4%D0%BE%D0%BC%20%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%D0%B5,%D0%94%D0%BE%D0%BD%D1%81%D0%BA%D0%BE%D0%B9%20%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE" },
 ];
+
+// Блокувальники реклами (uBlock, AdGuard з російськими фільтрами) ховають на сторінці посилання на dzen.ru —
+// у сітці лишаються порожні клітинки. Такі посилання ведемо через нашу переадресацію /stati-v-smi/go/<n>.
+const MASKED_HOSTS = ["dzen.ru"];
+const isMasked = (href: string) => {
+  if (!/^https?:/.test(href)) return false; // внутрішні сторінки (/stati/…)
+  const host = new URL(href).hostname;
+  return MASKED_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
+};
+
+/** Адреса картки публікації: напряму або через переадресацію (для доменів, які ріжуть блокувальники). */
+export const smiHref = (a: Article) => (isMasked(a.href) ? `/stati-v-smi/go/${ARTICLES.indexOf(a)}` : a.href);
+
+/** Куди веде переадресація /stati-v-smi/go/<n> (лише для «замаскованих» посилань). */
+export const smiRedirect = (n: number) => {
+  const a = ARTICLES[n];
+  return a && isMasked(a.href) ? a.href : null;
+};
