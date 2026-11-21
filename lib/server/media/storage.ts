@@ -5,14 +5,15 @@ import { del, put } from "@vercel/blob";
 
 /**
  * Куди складаються файли медіатеки.
- *  - є BLOB_READ_WRITE_TOKEN → Vercel Blob (прод: диск функцій Vercel не зберігається між запитами);
+ *  - Vercel Blob (прод: диск функцій Vercel не зберігається між запитами) — якщо є BLOB_STORE_ID
+ *    (нове підключення сховища: вхід через вбудований токен Vercel OIDC) або BLOB_READ_WRITE_TOKEN (старий спосіб);
  *  - немає → папка UPLOADS_DIR, віддається за /uploads/... (app/uploads/[...path]/route.ts).
  * Ключ файлу однаковий в обох: «2026/11/<id>-1600.webp».
  */
 
 export const uploadsDir = () => path.resolve(/*turbopackIgnore: true*/ process.env.UPLOADS_DIR ?? "./uploads");
 
-const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
+const useBlob = () => !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
 
 /** Зберегти файл; повертає його публічну адресу */
 export const putFile = async (key: string, body: Buffer, contentType: string): Promise<string> => {
