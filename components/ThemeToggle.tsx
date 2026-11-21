@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import styles from "./ThemeToggle.module.css";
@@ -9,11 +10,15 @@ export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  // В адмінці плаваючий перемикач не показуємо (вона бере тему, вибрану на сайті)
+  const admin = usePathname().startsWith("/admin");
 
   const toggle = () => {
     const isDark = document.documentElement.dataset.theme === "dark";
     setTheme(isDark ? "light" : "dark");
   };
+
+  if (admin) return null;
 
   return (
     <button

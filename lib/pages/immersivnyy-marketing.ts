@@ -32,7 +32,7 @@ export const IMMERSIVE_PAGE = {
   cases: [
     { title: "«Иммерсивный маркетинг»: от подставных бабушек до PornHub. Как театр, только денег больше", href: "https://vc.ru/marketing/722173-immersivnyy-marketing-ot-podstavnyh-babushek-do-pornhub-kak-teatr-tolko-deneg-bolshe" },
     { title: "Эмоциональный шампур как важнейший элемент «Иммерсивного маркетинга»", href: "https://gorodn.ru/razdel/novosti_kompaniy/praktika_biznesa/31617/" },
-    { title: "Иммерсивная переупаковка строительной компании", href: "https://www.sales-machine.team/stati/immersivnaya-pereupakovka-stroitelnoy-kompanii" },
+    { title: "Иммерсивная переупаковка строительной компании", href: "/stati/immersivnaya-pereupakovka-stroitelnoy-kompanii" },
     { title: "Новая эра маркетинга из Ростова-на-Дону", href: "https://gorodn.ru/razdel/obshchestvo_free/obrazovanie/41287/" },
     { title: "«Возьмите мои деньги!» Маркетолог из Ростова — о хищных продажах", href: "https://dzen.ru/a/ZFYCz8k6vUrSPrjl" },
     { title: "Иммерсивный маркетинг в России: о нашей концепции в Википедии", href: "https://ru.wikipedia.org/wiki/%D0%98%D0%BC%D0%BC%D0%B5%D1%80%D1%81%D0%B8%D0%B2%D0%BD%D1%8B%D0%B9_%D0%BC%D0%B0%D1%80%D0%BA%D0%B5%D1%82%D0%B8%D0%BD%D0%B3" },

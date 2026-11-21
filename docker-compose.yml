@@ -1,0 +1,18 @@
+# Локальна база для розробки: npm run db:up
+# Порт 5433 — щоб не конфліктувати з іншими проєктами на 5432.
+# На проді (Vercel) — окрема база (Neon), адреса в DATABASE_URL у налаштуваннях Vercel.
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: salesmachine
+      POSTGRES_PASSWORD: salesmachine_dev
+      POSTGRES_DB: salesmachine
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:

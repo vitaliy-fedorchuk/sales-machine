@@ -51,48 +51,90 @@
   max-width: 50rem;
 }
 
-/* «Записаться на курс, и ...» → при наведенні рядок їде вгору, знизу — «отжарить конкурентов» */
+/*
+ * «Записаться на курс, и ...» — грань паралелепіпеда, 1:1 з оригіналу (Webflow d-20, IX2 hero_btn_kurs):
+ * при наведенні передня (залита) грань за 500 мс повертається вгору (rotateX 90°, вісь — нижнє ребро),
+ * а нижня грань (контур, «отжарить конкурентов») піднімається з −90° у площину екрана (вісь — верхнє ребро).
+ * Розміри оригіналу 450×70, перспектива 2000px.
+ */
 .heroCta {
-  display: inline-flex;
+  position: relative;
+  display: block;
+  width: min(28.125rem, 100%);
+  height: 4.375rem;
   margin-top: 1.25rem;
-  padding: 1.25rem 2.25rem;
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
+  perspective: 125rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.125rem;
+  line-height: 1.1;
   text-transform: uppercase;
   text-decoration: none;
-  transition: background 0.6s ease, color 0.6s ease;
 }
 
 .swap {
-  display: grid;
-  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
 }
 
 .swap > span {
-  grid-area: 1 / 1;
-  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  text-align: center;
+  backface-visibility: hidden;
+  transition:
+    transform 0.5s ease,
+    background 0.6s ease,
+    color 0.6s ease,
+    border-color 0.6s ease;
 }
 
+/* передня грань — залита */
+.swap > span:first-child {
+  background: var(--ink);
+  color: var(--bg);
+  transform-origin: 50% 100%;
+}
+
+/* нижня грань — контур, чекає «лежачи» під кнопкою */
 .swap > span + span {
-  transform: translateY(110%);
+  border: 0.1875rem solid var(--ink);
+  color: var(--ink);
+  transform-origin: 50% 0;
+  transform: translateY(100%) rotateX(-90deg);
 }
 
 @media (hover: hover) {
   .heroCta:hover .swap > span:first-child {
-    transform: translateY(-110%);
+    transform: translateY(-100%) rotateX(90deg);
   }
   .heroCta:hover .swap > span + span {
-    transform: translateY(0);
+    transform: none;
   }
+}
+
+.heroCta:focus-visible .swap > span:first-child {
+  transform: translateY(-100%) rotateX(90deg);
+}
+
+.heroCta:focus-visible .swap > span + span {
+  transform: none;
 }
 
 .heroCta:focus-visible {
   outline: 1px solid var(--ink);
   outline-offset: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swap > span {
+    transition: background 0.6s ease, color 0.6s ease;
+  }
 }
 
 /* ---------- кнопки ---------- */
@@ -506,9 +548,10 @@
     font-size: 0.875rem;
   }
   .heroCta {
+    height: 3.75rem;
     margin-top: 0.75rem;
-    padding: 1.125rem 1.5rem;
-    font-size: 1rem;
+    font-size: 1.0625rem;
+    letter-spacing: 0.08em;
   }
   .text,
   .points,

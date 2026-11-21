@@ -1,0 +1,212 @@
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding-top: 3.75rem;
+}
+
+/* ---------- текст ---------- */
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+/* «Задача», «Реализация», «Результат» — мітка розділу на осі */
+.label {
+  margin: 1.5rem 0 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.p {
+  margin: 0;
+  font-size: 1.375rem;
+  line-height: 1.5;
+}
+
+.p a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+
+.p em {
+  font-style: italic;
+}
+
+/* ---------- зображення ---------- */
+.figure {
+  margin: 0;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.narrow {
+  width: min(100%, 40rem);
+}
+
+.frame .img {
+  border: 1px solid var(--ink);
+}
+
+.caption {
+  margin-top: 0.625rem;
+  color: var(--mute);
+  font-size: 0.9375rem;
+}
+
+/* ---------- відео ---------- */
+.video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.vertical {
+  width: min(100%, 26rem);
+  aspect-ratio: 9 / 16;
+}
+
+.video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------- аудіо, «смотреть отзыв», посилання ---------- */
+.audio {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13.75rem, 1fr));
+  gap: 0.75rem;
+}
+
+.audioBtn,
+.play,
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font: 600 0.9375rem/1.2 var(--font-main), system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.play,
+.link {
+  align-self: flex-start;
+}
+
+.audioBtn:hover,
+.audioBtn:focus-visible,
+.audioOn,
+.play:hover,
+.play:focus-visible,
+.link:hover,
+.link:focus-visible {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.audioBtn svg,
+.play svg,
+.link svg {
+  flex: none;
+}
+
+.audioBtn svg circle,
+.play svg circle,
+.link svg circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.link svg circle {
+  stroke-width: 2;
+}
+
+.audioBtn svg path,
+.play svg path {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.link svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- цитати ЗМІ ---------- */
+.press {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pressCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  height: 100%;
+  padding: 1.5rem;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.pressCard:hover,
+.pressCard:focus-visible {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.pressSource {
+  font: 500 0.8125rem/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pressQuote {
+  font-size: 1.0625rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+@media (max-width: 479px) {
+  .blocks {
+    gap: 1.75rem;
+    padding-top: 2.5rem;
+  }
+  .label {
+    margin-top: 1rem;
+    font-size: 1.375rem;
+  }
+  .p {
+    font-size: 1.125rem;
+    line-height: 1.45;
+  }
+}

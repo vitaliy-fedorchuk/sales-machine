@@ -1,0 +1,200 @@
+// Схема бази. Зміни → `npm run db:migrate -- --name <що змінилось>`:
+// Prisma створить міграцію в prisma/migrations (вона йде в git) і оновить клієнт.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Кейси (/stati/<slug>) ----------
+
+enum CaseStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Case {
+  id          String      @id @default(cuid())
+  /// Частина адреси: /stati/<slug>
+  slug        String      @unique
+  /// Заголовок H1
+  title       String
+  status      CaseStatus  @default(DRAFT)
+  publishedAt DateTime?
+  /// Категорії фільтра на /keysy: marketing, kreativ, pr, brending, reklama, rebranding, office
+  cats        String[]
+  /// Обкладинка для соцмереж (адреса з медіатеки); "" — без неї
+  coverSrc    String      @default("")
+  coverAlt    String      @default("")
+  /// Масив блоків. Структуру перевіряє zod (lib/cases/schema.ts) — і при збереженні, і при читанні.
+  blocks      Json        @default("[]")
+  /// <title> / og:title; порожньо — заголовок
+  seoTitle    String?
+  /// meta description
+  description String      @default("")
+  /// Напис на кнопці внизу; порожньо — «Клик, который поможет бизнесу»
+  cta         String?
+  createdBy   User?       @relation("CaseCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdById String?
+  updatedBy   User?       @relation("CaseUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedById String?
+  events      CaseEvent[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([updatedAt])
+}
+
+enum CaseAction {
+  CREATED
+  EDITED
+  PUBLISHED
+  UNPUBLISHED
+}
+
+/// Журнал змін кейсу. Послідовні правки однієї людини зливаються в один запис «редактировал».
+model CaseEvent {
+  id     String     @id @default(cuid())
+  case   Case       @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId String
+  user   User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String?
+  action CaseAction
+  at     DateTime   @default(now())
+
+  @@index([caseId, at])
+}
+
+// ---------- Адмінка: користувачі й вхід ----------
+
+enum UserRole {
+  /// Усе, включно з користувачами
+  ADMIN
+  /// Кейси й медіа
+  EDITOR
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  name         String
+  /// argon2id — сам пароль ніде не зберігається
+  passwordHash String
+  role         UserRole    @default(EDITOR)
+  lastLoginAt  DateTime?
+  sessions     Session[]
+  media        Media[]
+  casesCreated Case[]      @relation("CaseCreatedBy")
+  casesUpdated Case[]      @relation("CaseUpdatedBy")
+  caseEvents   CaseEvent[]
+  contents     Content[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+/// Вхід = сесія. У cookie — випадковий токен, тут — лише його SHA-256:
+/// навіть якщо базу вкрадуть, увійти чужими сесіями не вийде.
+model Session {
+  /// SHA-256 від токена з cookie
+  id        String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+/// Невдалі спроби входу — для обмеження перебору паролів
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  ip        String
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([ip, createdAt])
+}
+
+// ---------- Медіатека ----------
+
+enum MediaKind {
+  IMAGE
+  AUDIO
+}
+
+/// Файл медіатеки. Фото — 4 розміри webp (<key>-480/960/1600/2400.webp);
+/// аудіо — один файл як є (<key>.mp3). Сховище — Vercel Blob (прод) або UPLOADS_DIR (локально).
+model Media {
+  id            String   @id @default(cuid())
+  kind          MediaKind @default(IMAGE)
+  /// MIME-тип файлу на сайті: image/webp, audio/mpeg…
+  mime          String   @default("image/webp")
+  /// «2026/11/<id>» — без розміру й розширення
+  key           String   @unique
+  /// Повна адреса: фото — основний розмір (…-1600.webp), аудіо — сам файл
+  url           String
+  originalName  String
+  /// Розміри фото після повороту, до зменшення (аудіо — 0)
+  width         Int      @default(0)
+  height        Int      @default(0)
+  /// Вага найбільшого варіанта, байти
+  bytes         Int
+  /// Вага завантаженого оригіналу (сам оригінал не зберігається)
+  originalBytes Int?
+  /// Опис для незрячих і пошуку — підставляється, коли фото вибирають
+  alt           String   @default("")
+  uploadedBy    User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedById  String?
+  createdAt     DateTime @default(now())
+
+  @@index([kind, createdAt])
+}
+
+// ---------- Вміст сторінок (тексти, списки) ----------
+
+/// Вміст розділу сайту за ключем: "smi", "team", "contacts"…
+/// Поля й перевірку описано в lib/content/registry.ts; поки запису немає — сайт показує тексти з коду.
+model Content {
+  key         String   @id
+  data        Json
+  updatedBy   User?    @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+}
+
+// ---------- Заявки з форм сайту ----------
+
+enum LeadStatus {
+  NEW
+  IN_WORK
+  DONE
+  SPAM
+}
+
+model Lead {
+  id        String     @id @default(cuid())
+  /// Що саме замовляли: «Полный курс…», «Рассрочка…», «Связаться: …»
+  topic     String
+  name      String
+  phone     String
+  telegram  String     @default("")
+  question  String     @default("")
+  /// Сторінка, з якої надіслали
+  page      String     @default("")
+  status    LeadStatus @default(NEW)
+  /// Нотатка менеджера
+  note      String     @default("")
+  /// Чи дійшло повідомлення в Telegram
+  notified  Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([status, createdAt])
+}

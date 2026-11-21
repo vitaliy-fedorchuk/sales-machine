@@ -1,5 +1,5 @@
 // Публікації в СМИ (перенесено з sales-machine.team/stati-v-smi). Пізніше — з CMS.
-// Внутрішні статті (/stati…) поки ведуть на старий сайт — розділу статей тут ще немає.
+// Внутрішні статті (/stati…) поки ведуть на старий сайт.
 
 export type Article = { year: string; title: string; href: string };
 
@@ -60,7 +60,7 @@ export const ARTICLES: readonly Article[] = [
   { year: "2019", title: "Региональная аналитика в секторе жилой недвижимости", href: "https://gorodn.ru/razdel/rynki/nedvizhimost/23838/" },
   { year: "2019", title: "Аналитика загородной недвижимости. Коттеджи ждут восстановления спроса", href: "https://www.kommersant.ru/doc/3383231#:~:text=%D0%BF%D1%80%D0%BE%D0%B4%D0%B0%D0%B6%20%C2%AB%D0%98%D0%9D%D0%9F%D0%9A%20%D0%94%D0%B5%D0%B2%D0%B5%D0%BB%D0%BE%D0%BF%D0%BC%D0%B5%D0%BD%D1%82%C2%BB-,%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE,-%D0%B7%D0%B0%D1%8F%D0%B2%D0%BB%D1%8F%D0%B5%D1%82%2C%20%D1%87%D1%82%D0%BE%20%D0%B2" },
   { year: "2019", title: "Технологии «умного дома» на рынке недвижимости: варианты и решения от застройщиков", href: "https://repinlife.ru/texnologii-umnogo-doma-na-rynke-nedvizhimosti-varianty-i-resheniya-ot-zastrojshhikov/#:~:text=%D1%84%D0%BE%D1%80%D0%BC%D0%B8%D1%80%D1%83%D0%B5%D1%82%20%D0%BB%D0%BE%D1%8F%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5%20%D0%BA%D0%BE%D0%BC%D1%8C%D1%8E%D0%BD%D0%B8%D1%82%D0%B8.-,%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE,-%2C%20%D1%83%D1%87%D1%80%D0%B5%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D1%8C" },
-  { year: "2018", title: "Детали победы на European Property Awards", href: "https://www.sales-machine.team/stati/detali-pobedy-na-european-property-awards" },
+  { year: "2018", title: "Детали победы на European Property Awards", href: "/stati/detali-pobedy-na-european-property-awards" },
   { year: "2018", title: "Соединили офлайн + онлайн и опередили план продаж в 3 раза!", href: "https://banditomag.ru/kejs-kak-prodavat-kvartiry-bez-kontekstnoj-reklamy/" },
   { year: "2017", title: "Премиум-сегмент в провинциальной недвижимости", href: "https://plus.rbc.ru/news/5a40b3e17a8aa9087692e7da" },
   { year: "2017", title: "Региональная аналитика элит и премиум класса. Штучный метр", href: "https://www.kommersant.ru/doc/3337878#:~:text=%D1%8D%D1%82%D0%BE%D0%BC%20%D0%B3%D0%BE%D0%B2%D0%BE%D1%80%D0%B8%D1%82%20%D0%B8-,%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE,-%3A%20%C2%AB%D0%A4%D0%BE%D1%80%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20%D0%B1%D0%BB%D0%B0%D0%B3%D0%BE%D0%BF%D1%80%D0%B8%D1%8F%D1%82%D0%BD%D0%BE%D0%B3%D0%BE%20%D1%81%D0%BE%D1%81%D0%B5%D0%B4%D1%81%D0%BA%D0%BE%D0%B3%D0%BE" },
@@ -69,3 +69,21 @@ export const ARTICLES: readonly Article[] = [
   { year: "2016", title: "Круглый стол в пресс-центре губернатора", href: "https://don24.ru/rubric/ekonomika/rostovchane-vybirayut-kvartiry-kak-moskvichi.html#:~:text=%C2%AB%D0%92%20%D1%8D%D0%BA%D0%BE%D0%BD%D0%BE%D0%BC-%D1%81%D0%B5%D0%B3%D0%BC%D0%B5%D0%BD%D1%82%D0%B5,%D0%BF%D0%BE%D1%8F%D1%81%D0%BD%D0%B8%D0%BB%20%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE" },
   { year: "2016", title: "Региональные особенности и прогноз на 2017", href: "https://rg.ru/2016/11/22/reg-ufo/pochemu-na-iuge-rossii-silno-podeshevela-nedvizhimost.html#:~:text=-%20%D0%92%20%D0%BA%D0%B0%D0%B6%D0%B4%D0%BE%D0%BC%20%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%D0%B5,%D0%94%D0%BE%D0%BD%D1%81%D0%BA%D0%BE%D0%B9%20%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE" },
 ];
+
+// Блокувальники реклами (uBlock, AdGuard з російськими фільтрами) ховають на сторінці посилання на dzen.ru —
+// у сітці лишаються порожні клітинки. Такі посилання ведемо через нашу переадресацію /stati-v-smi/go/<n>.
+const MASKED_HOSTS = ["dzen.ru"];
+const isMasked = (href: string) => {
+  if (!/^https?:/.test(href)) return false; // внутрішні сторінки (/stati/…)
+  const host = new URL(href).hostname;
+  return MASKED_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
+};
+
+/** Адреса картки публікації: напряму або через переадресацію (для доменів, які ріжуть блокувальники). */
+export const smiHref = (a: Article) => (isMasked(a.href) ? `/stati-v-smi/go/${ARTICLES.indexOf(a)}` : a.href);
+
+/** Куди веде переадресація /stati-v-smi/go/<n> (лише для «замаскованих» посилань). */
+export const smiRedirect = (n: number) => {
+  const a = ARTICLES[n];
+  return a && isMasked(a.href) ? a.href : null;
+};

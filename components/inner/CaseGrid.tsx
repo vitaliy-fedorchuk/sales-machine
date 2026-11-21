@@ -15,7 +15,7 @@ export default function CaseGrid({ title, mark, cases }: { title: string; mark: 
       <ul className={styles.grid}>
         {cases.map((c, i) => (
           <li key={c.href}>
-            <a className={styles.card} href={c.href} target="_blank" rel="noopener noreferrer">
+            <a className={styles.card} href={c.href} {...(/^https?:/.test(c.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
               <span className={styles.top}>
                 <svg className={styles.arrow} width="41" height="41" viewBox="0 0 41 41" aria-hidden="true">
                   <circle cx="20.5" cy="20.5" r="20" />

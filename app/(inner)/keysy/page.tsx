@@ -5,14 +5,16 @@ import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
 import CaseSections from "@/components/keysy/CaseSections";
-import { KEYSY_PAGE as P } from "@/lib/pages/keysy";
+import { getPublishedCaseList } from "@/lib/cases";
+import { KEYSY_PAGE as P, resolveCases } from "@/lib/pages/keysy";
 
 export const metadata: Metadata = {
   title: "Кейсы — Sales Machine",
   description: "Кейсы, которые принесли результат: PR, маркетинг, креатив, брендинг, реклама, ребрендинг.",
 };
 
-export default function KeysyPage() {
+export default async function KeysyPage() {
+  const cases = resolveCases(await getPublishedCaseList());
   return (
     <>
       <BackLink word={P.word} />
@@ -25,7 +27,7 @@ export default function KeysyPage() {
           </div>
         </section>
 
-        <CaseSections />
+        <CaseSections cases={cases} />
 
         <section className={page.section}>
           <div className={page.ctaWrap}>

@@ -94,6 +94,8 @@ export default function PageTransition() {
       if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download") || "noTransition" in a.dataset) return;
       const url = new URL(a.href);
       if (url.origin !== location.origin || url.pathname === location.pathname) return;
+      // Адмінка — без анімації переходу (і вхід туди, і вихід звідти)
+      if (url.pathname.startsWith("/admin") || location.pathname.startsWith("/admin")) return;
       e.preventDefault(); // next/link бачить defaultPrevented і сам не навігує
       go!(url.href);
     };
