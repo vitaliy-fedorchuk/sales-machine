@@ -1,0 +1,118 @@
+/* Фіксована навігація по розділах: між стрілкою «назад» (зліва) і перемикачем теми (справа). */
+.nav {
+  position: fixed;
+  top: 1.125rem;
+  left: 50%;
+  z-index: 6;
+  translate: -50% -150%;
+  opacity: 0;
+  transition:
+    translate 0.6s cubic-bezier(0.625, 0.05, 0, 1),
+    opacity 0.4s ease;
+}
+
+.shown {
+  translate: -50% 0;
+  opacity: 1;
+}
+
+/* з клавіатури навігація доступна завжди */
+.nav:focus-within {
+  translate: -50% 0;
+  opacity: 1;
+}
+
+.list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  list-style: none;
+  transition: background 0.6s ease, border-color 0.6s ease;
+}
+
+.list li + li {
+  border-left: 1px solid var(--ink);
+}
+
+.link {
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;
+  color: var(--mute);
+  font: 500 0.8125rem/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.3s ease, background 0.3s ease;
+}
+
+.link:hover,
+.link:focus-visible,
+.active {
+  color: var(--ink);
+}
+
+/* активний розділ — тонка риска знизу */
+.link::after {
+  content: "";
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: 0.4375rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.active::after {
+  transform: scaleX(1);
+}
+
+/* «Записаться» — залита */
+.cta {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.cta:hover,
+.cta:focus-visible,
+.cta.active {
+  color: var(--bg);
+}
+
+.link:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: -0.3125rem;
+}
+
+/* на мобільному — внизу екрана, на всю ширину */
+@media (max-width: 767px) {
+  .nav {
+    top: auto;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    translate: 0 150%;
+  }
+  .shown,
+  .nav:focus-within {
+    translate: 0 0;
+  }
+  .list li {
+    flex: 1 1 auto;
+  }
+  .link {
+    padding: 0.875rem 0.5rem;
+    font-size: 0.6875rem;
+    text-align: center;
+  }
+  .link::after {
+    left: 0.5rem;
+    right: 0.5rem;
+  }
+}

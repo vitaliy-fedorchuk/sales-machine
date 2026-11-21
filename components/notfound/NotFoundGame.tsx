@@ -3,7 +3,7 @@
 /*
  * 404 — міні-гра «рогатка» (за мотивами Osmo 404 Minigame, переписана під React і монохром сайту).
  * Тягни ручку внизу → відпусти → ракета летить з інерцією й збиває цілі:
- * логотип, посилання меню, цифри «404», підпис і мух. Збив усе — екран з часом і «Ещё раз».
+ * логотип, цифри «404», підпис і мух. Збив усе — екран з часом і «Ещё раз».
  */
 
 import gsap from "gsap";
@@ -13,13 +13,6 @@ import { Physics2DPlugin } from "gsap/Physics2DPlugin";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import styles from "./NotFoundGame.module.css";
-
-const LINKS = [
-  { href: "/pr", label: "PR" },
-  { href: "/kniga", label: "Книга" },
-  { href: "/keysy", label: "Кейсы" },
-  { href: "/otzyvy", label: "Отзывы" },
-];
 
 const CONFIG = {
   dragToVelocityRatio: 0.01,
@@ -250,13 +243,6 @@ export default function NotFoundGame() {
         <Link href="/" className={styles.logo} data-target>
           Sales Machine
         </Link>
-        <nav className={styles.links} aria-label="Разделы" data-target>
-          {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className={styles.link}>
-              {l.label}
-            </Link>
-          ))}
-        </nav>
       </header>
 
       <div className={styles.center}>

@@ -1,0 +1,211 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 1.25rem) / 2);
+  column-gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 0.25rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  scroll-snap-align: start;
+  transition: border-color 0.6s ease, background 0.6s ease;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 7.5rem;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: var(--surface);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: filter 0.5s ease, transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.thumb:hover .video,
+.thumb:focus-visible .video {
+  filter: grayscale(0);
+  transform: scale(1.06);
+}
+
+.thumb:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 0.1875rem;
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.name {
+  margin: 0;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid var(--grey);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.role {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--mute);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.quote {
+  flex: 1;
+  margin: 0;
+  font-size: 1.0625rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+/* лічильник · смужка прогресу · стрілки */
+.controls {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.count {
+  margin: 0;
+  font: 500 0.875rem/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+.count span {
+  color: var(--mute);
+}
+
+.bar {
+  position: relative;
+  height: 1px;
+  background: var(--grey);
+}
+
+.bar i {
+  position: absolute;
+  top: -1px;
+  height: 3px;
+  background: var(--ink);
+  transition: left 0.45s cubic-bezier(0.625, 0.05, 0, 1), width 0.45s ease;
+}
+
+.arrows {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+}
+
+.arrow svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.arrow:hover:not(:disabled),
+.arrow:focus-visible {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (max-width: 767px) {
+  .track {
+    grid-auto-columns: 88%;
+  }
+}
+
+@media (max-width: 479px) {
+  .card {
+    padding: 1.125rem;
+  }
+  .top {
+    grid-template-columns: 5.5rem 1fr;
+    gap: 1rem;
+  }
+  .thumb {
+    width: 5.5rem;
+  }
+  .name {
+    font-size: 1.0625rem;
+  }
+  .quote {
+    font-size: 1rem;
+  }
+  .controls {
+    gap: 1rem;
+  }
+  .arrow {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
