@@ -8,6 +8,10 @@ import CaseSections from "@/components/keysy/CaseSections";
 import { getPublishedCaseList } from "@/lib/cases";
 import { KEYSY_PAGE as P, resolveCases } from "@/lib/pages/keysy";
 
+// Список кейсів — з бази. Адмінка скидає кеш сама; а якщо кейси додали в обхід неї (імпорт, сид) —
+// сторінка однаково оновиться не пізніше ніж за 10 хвилин.
+export const revalidate = 600;
+
 export const metadata: Metadata = {
   title: "Кейсы — Sales Machine",
   description: "Кейсы, которые принесли результат: PR, маркетинг, креатив, брендинг, реклама, ребрендинг.",
