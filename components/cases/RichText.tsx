@@ -1,5 +1,6 @@
 import { Fragment, type ReactNode } from "react";
 import type { RichText as RT } from "@/lib/cases/types";
+import { outHref } from "@/lib/outlinks";
 
 // **жирний**, *курсив*, [текст](url)
 const INLINE = /\*\*(.+?)\*\*|\*(.+?)\*|\[([^\]]+)\]\(([^)\s]+)\)/g;
@@ -17,7 +18,7 @@ function inline(text: string, key: string): ReactNode[] {
       const href = m[4];
       const external = /^https?:/.test(href);
       out.push(
-        <a key={k} href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+        <a key={k} href={outHref(href)} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
           {m[3]}
         </a>,
       );

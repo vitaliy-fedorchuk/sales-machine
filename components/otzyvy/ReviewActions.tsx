@@ -1,3 +1,4 @@
+import { isExternal, outHref } from "@/lib/outlinks";
 import type { Review } from "@/lib/pages/otzyvy";
 import styles from "./otzyvy.module.css";
 
@@ -15,7 +16,7 @@ export default function ReviewActions({ review, onPlay }: { review: Review; onPl
         </button>
       )}
       {review.links?.map((l) => (
-        <a key={l.href} className={styles.link} href={l.href} target="_blank" rel="noopener noreferrer">
+        <a key={l.href} className={styles.link} href={outHref(l.href)} {...(isExternal(l.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
           <svg width="16" height="16" viewBox="0 0 41 41" aria-hidden="true">
             <circle cx="20.5" cy="20.5" r="19.5" />
             <path d="M15 26 26 15M16 15h10v10" />

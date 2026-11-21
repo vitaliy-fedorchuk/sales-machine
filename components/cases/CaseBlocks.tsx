@@ -1,12 +1,29 @@
 import type { CaseBlock } from "@/lib/cases/types";
+import { outHref } from "@/lib/outlinks";
 import CaseAudio from "./CaseAudio";
 import CaseGallery from "./CaseGallery";
 import CaseImg from "./CaseImg";
 import CaseReview from "./CaseReview";
+import CaseVideoGallery from "./CaseVideoGallery";
 import RichText from "./RichText";
 import styles from "./CaseBlocks.module.css";
 
 const pad = (n: number) => String(n).padStart(2, "0");
+
+type VideoBlock = Extract<CaseBlock, { type: "video" }>;
+type Item = CaseBlock | { type: "videoGroup"; id: string; videos: VideoBlock[] };
+
+/** Кілька відео поспіль → один слайдер (а не стовпчик плеєрів) */
+const group = (blocks: readonly CaseBlock[]): Item[] => {
+  const out: Item[] = [];
+  for (const b of blocks) {
+    const last = out[out.length - 1];
+    if (b.type === "video" && last?.type === "video") out[out.length - 1] = { type: "videoGroup", id: last.id, videos: [last, b] };
+    else if (b.type === "video" && last?.type === "videoGroup") last.videos.push(b);
+    else out.push(b);
+  }
+  return out;
+};
 
 /** embed-URL з автозапуском вимкненим і без зайвого брендування плеєра. */
 const embed = (src: string) => {
@@ -27,7 +44,7 @@ export default function CaseBlocks({ blocks, caseTitle, firstMark = 2 }: { block
   let mark = firstMark;
   return (
     <div className={styles.blocks}>
-      {blocks.map((b, i) => {
+      {group(blocks).map((b, i) => {
         switch (b.type) {
           case "text":
             return (
@@ -61,6 +78,8 @@ export default function CaseBlocks({ blocks, caseTitle, firstMark = 2 }: { block
                 />
               </div>
             );
+          case "videoGroup":
+            return <CaseVideoGallery key={i} videos={b.videos} caseTitle={caseTitle} />;
           case "audio":
             return <CaseAudio key={i} items={b.items} />;
           case "review":
@@ -68,7 +87,7 @@ export default function CaseBlocks({ blocks, caseTitle, firstMark = 2 }: { block
           case "link": {
             const external = /^https?:/.test(b.href);
             return (
-              <a key={i} className={styles.link} href={b.href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+              <a key={i} className={styles.link} href={outHref(b.href)} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
                 {b.label}
                 <svg width="20" height="20" viewBox="0 0 41 41" aria-hidden="true">
                   <circle cx="20.5" cy="20.5" r="19.5" />
@@ -82,7 +101,7 @@ export default function CaseBlocks({ blocks, caseTitle, firstMark = 2 }: { block
               <ul key={i} className={styles.press}>
                 {b.items.map((p) => (
                   <li key={p.href}>
-                    <a href={p.href} target="_blank" rel="noopener noreferrer" className={styles.pressCard}>
+                    <a href={outHref(p.href)} target="_blank" rel="noopener noreferrer" className={styles.pressCard}>
                       <span className={styles.pressSource}>{p.source}</span>
                       <span className={styles.pressQuote}>{p.quote}</span>
                     </a>

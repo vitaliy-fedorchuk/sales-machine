@@ -17,7 +17,6 @@ export type Review = {
   links?: ReviewLink[];     // «Смотреть кейс», «Полный отзыв» …
 };
 
-const OLD = "https://www.sales-machine.team";
 
 export const OTZYVY_PAGE = {
   word: "Отзывы",
@@ -36,7 +35,7 @@ export const REVIEWS: readonly Review[] = [
     poster: "/img/reviews/01.jpg",
     video: "https://player.vimeo.com/video/1063827392?h=19f2efa6ff",
     format: "vertical",
-    links: [{ label: "Смотреть кейс", href: `${OLD}/stati/immersivnaya-pereupakovka-stroitelnoy-kompanii` }],
+    links: [{ label: "Смотреть кейс", href: "/stati/immersivnaya-pereupakovka-stroitelnoy-kompanii" }],
   },
   {
     id: "02",
@@ -78,7 +77,7 @@ export const REVIEWS: readonly Review[] = [
     format: "vertical",
     links: [
       { label: "Полный отзыв", href: "https://drive.google.com/file/d/1AL1wb9XO7ygXE2tUtW-uofeCWxPQPnbU/view?usp=sharing" },
-      { label: "Смотреть кейс", href: `${OLD}/stati/hozyain-barin-startovaya-rk` },
+      { label: "Смотреть кейс", href: "/stati/hb-startovyy-pr" },
     ],
   },
   {

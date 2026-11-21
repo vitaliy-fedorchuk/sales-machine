@@ -25,9 +25,22 @@ import krasivoModnoVkusno from "./seed/krasivo-modno-vkusno";
 import mamino from "./seed/mamino";
 import pereupakovka from "./seed/pereupakovka";
 import richspeys from "./seed/richspeys";
+import dvenadtsatKlyuchey from "./seed/12-klyuchey";
+import dvenadtsatKlyucheyDizayn from "./seed/12-klyuchey-dizayn";
+import hbStart from "./seed/hb-start";
+import hbAvtobusy from "./seed/hb-avtobusy";
+import hbNewYear from "./seed/hb-new-year";
+import immersivnyyOfis from "./seed/ofis";
+import shtolts from "./seed/shtolts";
+import unistroyRk from "./seed/unistroy-rk";
+import leshchi from "./seed/leshchi";
+import unistroyBitva from "./seed/unistroy-bitva";
+import prHarizmy from "./seed/pr-harizmy";
+import dvizhenie from "./seed/dvizhenie";
 import type { SeedAudio, SeedCase, SeedImage } from "./seed/types";
 
-const CASES: SeedCase[] = [kashemirovyyKrab, golosGucci, pereupakovka, europeanPropertyAwards, avtoKungFu, dobryyKot, krasivoModnoVkusno, fundamentalnyeOtcy, richspeys, harizmy, mamino];
+const CASES: SeedCase[] = [kashemirovyyKrab, golosGucci, pereupakovka, europeanPropertyAwards, avtoKungFu, dobryyKot, krasivoModnoVkusno, fundamentalnyeOtcy, richspeys, harizmy, mamino,
+  dvenadtsatKlyuchey, dvenadtsatKlyucheyDizayn, hbStart, hbAvtobusy, hbNewYear, immersivnyyOfis, shtolts, unistroyRk, leshchi, unistroyBitva, prHarizmy, dvizhenie];
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
