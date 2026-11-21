@@ -34,7 +34,7 @@ export default function KnigaPage() {
           </div>
           <p className={page.p} data-reveal>{K.intro}</p>
 
-          <div className={styles.book}>
+          <div className={styles.book} data-book-zone>
             <div className={styles.buy}>
               <div className={styles.coverBox}>
                 <Book3D
@@ -44,6 +44,8 @@ export default function KnigaPage() {
                   width={451}
                   height={621}
                   spine="Иммерсивный маркетинг"
+                  back={K.book.back}
+                  zone="[data-book-zone]"
                 />
               </div>
               <div className={styles.buttons}>

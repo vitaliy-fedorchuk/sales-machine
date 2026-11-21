@@ -4,28 +4,45 @@
  */
 .area {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 36px;
   width: 100%;
   perspective: 1400px;
 }
 
+/* сама книга — кнопка (клік перевертає) */
 .stage {
   --w: min(400px, 70vw);
   --h: calc(var(--w) * var(--ratio, 1.38));
   --t: calc(var(--w) * 0.1);
+  --c: calc(var(--w) * 0.013); /* товщина палітурки */
+  --o: 4px;                    /* наскільки палітурка виступає за сторінки */
   --cover: #1f3a2c;    /* колір палітурки (зелена обкладинка) */
   --gold: #d6b46a;
   --paper: #f3efe6;
   position: relative;
+  display: block;
   width: var(--w);
   height: var(--h);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
   transform-style: preserve-3d;
+}
+
+.stage:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 16px;
 }
 
 .book {
   position: absolute;
   inset: 0;
+  display: block;
   transform-style: preserve-3d;
   will-change: transform;
 }
@@ -34,7 +51,16 @@
   position: absolute;
   top: 50%;
   left: 50%;
+  display: block;
   backface-visibility: hidden;
+}
+
+.hint {
+  font: 500 11px/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  transition: color 0.6s ease;
 }
 
 /* обкладинка */
@@ -71,7 +97,71 @@
 .back {
   transform: rotateY(180deg) translateZ(calc(var(--t) / 2));
   border-radius: 4px 2px 2px 4px;
+  overflow: hidden;
   background: var(--cover);
+}
+
+/* корінець на звороті — справа, тому «шарнір» дзеркальний */
+.glossBack {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(270deg, rgb(0 0 0 / 0.35) 0, rgb(255 255 255 / 0.1) 2.5%, transparent 6%),
+    linear-gradient(245deg, rgb(255 255 255 / 0.1) 0%, transparent 38%);
+  pointer-events: none;
+}
+
+/* зверстана задня обкладинка (поки немає скану справжньої) */
+.backDesign {
+  position: absolute;
+  inset: 7% 9%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--w) * 0.035);
+  padding: calc(var(--w) * 0.06) calc(var(--w) * 0.05);
+  border: 1px solid rgb(214 180 106 / 0.45);
+  color: var(--gold);
+  text-align: center;
+}
+
+.backAuthors {
+  white-space: pre-line;
+  line-height: 1.6;
+  font-size: calc(var(--w) * 0.028);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.backTitle {
+  font-size: calc(var(--w) * 0.06);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.backRule {
+  width: 30%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.backText {
+  color: rgb(243 239 230 / 0.86);
+  font-size: calc(var(--w) * 0.038);
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.backBrand {
+  margin-top: auto;
+  font-size: calc(var(--w) * 0.03);
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
 }
 
 /* корінець — зліва */
@@ -104,27 +194,69 @@
   background-image: repeating-linear-gradient(var(--dir, 90deg), rgb(0 0 0 / 0.07) 0 1px, transparent 1px 3px);
 }
 
+/* Блок сторінок — між палітурками (глибина t − 2c) і трохи втоплений від країв (--o). */
 .pages {
-  width: var(--t);
-  height: calc(var(--h) - 6px);
-  margin: calc((var(--h) - 6px) / -2) 0 0 calc(var(--t) / -2);
-  transform: rotateY(90deg) translateZ(calc(var(--w) / 2 - 3px));
+  --pw: calc(var(--t) - 2 * var(--c));
+  --ph: calc(var(--h) - 2 * var(--o));
+  width: var(--pw);
+  height: var(--ph);
+  margin: calc(var(--ph) / -2) 0 0 calc(var(--pw) / -2);
+  transform: rotateY(90deg) translateZ(calc(var(--w) / 2 - var(--o)));
 }
 
 .top,
 .bottom {
   --dir: 0deg;
-  width: calc(var(--w) - 6px);
-  height: var(--t);
-  margin: calc(var(--t) / -2) 0 0 calc((var(--w) - 6px) / -2);
+  --pw: calc(var(--w) - var(--o));
+  --pd: calc(var(--t) - 2 * var(--c));
+  width: var(--pw);
+  height: var(--pd);
+  /* зсув на --o/2 вліво: від корінця сторінки йдуть до самого краю, справа — втоплені */
+  margin: calc(var(--pd) / -2) 0 0 calc(var(--pw) / -2 - var(--o) / 2);
 }
 
 .top {
-  transform: rotateX(90deg) translateZ(calc(var(--h) / 2 - 3px));
+  transform: rotateX(90deg) translateZ(calc(var(--h) / 2 - var(--o)));
 }
 
 .bottom {
-  transform: rotateX(-90deg) translateZ(calc(var(--h) / 2 - 3px));
+  transform: rotateX(-90deg) translateZ(calc(var(--h) / 2 - var(--o)));
+}
+
+/* Торці палітурок (картон) — тонкі смужки по краю передньої й задньої обкладинки. */
+.board {
+  background: #183024;
+}
+
+/* --z — глибина центру палітурки: передня біля +t/2, задня біля −t/2 */
+.boardFront {
+  --z: calc(var(--t) / 2 - var(--c) / 2);
+}
+
+.boardBack {
+  --z: calc(var(--t) / -2 + var(--c) / 2);
+}
+
+.boardRight {
+  width: var(--c);
+  height: var(--h);
+  margin: calc(var(--h) / -2) 0 0 calc(var(--c) / -2);
+  transform: translateZ(var(--z)) rotateY(90deg) translateZ(calc(var(--w) / 2));
+}
+
+.boardTop,
+.boardBottom {
+  width: var(--w);
+  height: var(--c);
+  margin: calc(var(--c) / -2) 0 0 calc(var(--w) / -2);
+}
+
+.boardTop {
+  transform: translateZ(var(--z)) rotateX(90deg) translateZ(calc(var(--h) / 2));
+}
+
+.boardBottom {
+  transform: translateZ(var(--z)) rotateX(-90deg) translateZ(calc(var(--h) / 2));
 }
 
 /* тінь на «підлозі» */
