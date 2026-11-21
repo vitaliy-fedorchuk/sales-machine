@@ -1,0 +1,151 @@
+/*
+ * Книга як 3D-коробка. --w — ширина обкладинки, --h — висота, --t — товщина.
+ * Усі грані стоять по центру .book і розвертаються на свої місця.
+ */
+.area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  perspective: 1400px;
+}
+
+.stage {
+  --w: min(400px, 70vw);
+  --h: calc(var(--w) * var(--ratio, 1.38));
+  --t: calc(var(--w) * 0.1);
+  --cover: #1f3a2c;    /* колір палітурки (зелена обкладинка) */
+  --gold: #d6b46a;
+  --paper: #f3efe6;
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+}
+
+.book {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.face {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  backface-visibility: hidden;
+}
+
+/* обкладинка */
+.front,
+.back {
+  width: var(--w);
+  height: var(--h);
+  margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+}
+
+.front {
+  transform: translateZ(calc(var(--t) / 2));
+  border-radius: 2px 4px 4px 2px;
+  overflow: hidden;
+}
+
+.coverImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* відблиск і «шарнір» біля корінця */
+.gloss {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.35) 0, rgb(255 255 255 / 0.12) 2.5%, transparent 6%),
+    linear-gradient(115deg, rgb(255 255 255 / 0.14) 0%, transparent 38%);
+  pointer-events: none;
+}
+
+.back {
+  transform: rotateY(180deg) translateZ(calc(var(--t) / 2));
+  border-radius: 4px 2px 2px 4px;
+  background: var(--cover);
+}
+
+/* корінець — зліва */
+.spine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--t);
+  height: var(--h);
+  margin: calc(var(--h) / -2) 0 0 calc(var(--t) / -2);
+  transform: rotateY(-90deg) translateZ(calc(var(--w) / 2));
+  background: linear-gradient(90deg, #16291f, var(--cover) 30%, #2a4a39 55%, var(--cover) 80%, #16291f);
+}
+
+.spine span {
+  writing-mode: vertical-rl;
+  color: var(--gold);
+  font-size: calc(var(--t) * 0.36);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* зріз сторінок — справа, зверху, знизу */
+.pages,
+.top,
+.bottom {
+  background-color: var(--paper);
+  background-image: repeating-linear-gradient(var(--dir, 90deg), rgb(0 0 0 / 0.07) 0 1px, transparent 1px 3px);
+}
+
+.pages {
+  width: var(--t);
+  height: calc(var(--h) - 6px);
+  margin: calc((var(--h) - 6px) / -2) 0 0 calc(var(--t) / -2);
+  transform: rotateY(90deg) translateZ(calc(var(--w) / 2 - 3px));
+}
+
+.top,
+.bottom {
+  --dir: 0deg;
+  width: calc(var(--w) - 6px);
+  height: var(--t);
+  margin: calc(var(--t) / -2) 0 0 calc((var(--w) - 6px) / -2);
+}
+
+.top {
+  transform: rotateX(90deg) translateZ(calc(var(--h) / 2 - 3px));
+}
+
+.bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--h) / 2 - 3px));
+}
+
+/* тінь на «підлозі» */
+.shadow {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: calc(var(--h) * -0.06);
+  height: calc(var(--h) * 0.08);
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.35);
+  filter: blur(14px);
+  transform: translateZ(calc(var(--t) * -2));
+}
+
+:global(html[data-theme="dark"]) .shadow {
+  background: rgb(0 0 0 / 0.7);
+}
+
+@media (max-width: 479px) {
+  .stage {
+    --w: min(290px, 68vw);
+  }
+}

@@ -1,0 +1,123 @@
+.cases {
+  position: relative;
+  z-index: 1;
+  padding-top: 20px;
+  pointer-events: none;
+}
+
+.cases > * {
+  pointer-events: auto;
+}
+
+.cases h2 {
+  margin-bottom: 30px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grid > li {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 100%;
+  padding: 30px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color 0.6s ease, opacity 0.3s ease;
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.arrow {
+  display: block;
+  fill: none;
+  stroke: var(--ink);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), fill 0.3s ease, stroke 0.3s ease;
+}
+
+.arrow path {
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.num {
+  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  color: var(--mute);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Hover: наведена картка як є, решта гасне (лише desktop). */
+@media (hover: hover) and (min-width: 992px) {
+  .grid:has(.card:hover) .card:not(:hover) {
+    opacity: 0.4;
+  }
+  .card:hover .arrow {
+    transform: rotate(45deg);
+    fill: var(--ink);
+  }
+  .card:hover .arrow path {
+    stroke: var(--bg);
+  }
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (max-width: 991px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .title {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 479px) {
+  .cases h2 {
+    margin-bottom: 20px;
+  }
+  .grid {
+    gap: 20px;
+  }
+  .card {
+    padding: 20px;
+  }
+  .title {
+    font-size: 21px;
+  }
+}

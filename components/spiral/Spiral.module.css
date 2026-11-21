@@ -69,6 +69,21 @@
   perspective: 600px;
 }
 
+/* Телефон: інфоблок притиснутий до низу екрана, під ним градієнт фону. */
+.infoBottom {
+  top: auto;
+  bottom: 0;
+  right: 0;
+  max-width: none;
+  padding: 56px 20px max(28px, env(safe-area-inset-bottom)) var(--info-left, 20px);
+  background: linear-gradient(to top, var(--bg) 58%, transparent);
+  transition: background 0.6s ease;
+}
+
+.infoBottom .sub {
+  max-width: 320px;
+}
+
 .cnt {
   display: flex;
   align-items: center;

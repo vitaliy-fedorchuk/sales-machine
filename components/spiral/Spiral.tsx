@@ -59,7 +59,26 @@ export default function Spiral({ items }: Props) {
     let vh = innerHeight;
     let fy = vh * cfg.focus;
     let left = vw * cfg.left;
-    let lay: Layout = computeLayout(items, vw, cfg);
+    // Ширина найширшого рядка при font-size 100px — щоб на вузьких екранах зменшити шрифт,
+    // і довгі слова («О нас. Контакты») не вилазили за край.
+    const probe = document.createElement("div");
+    probe.className = styles.row;
+    probe.style.cssText = "font-size:100px;visibility:hidden;transform:none;filter:none";
+    track.appendChild(probe);
+    let widest = 0;
+    const measureWidest = () => {
+      widest = 0;
+      for (const it of items) {
+        for (const line of it.label.split("\n")) {
+          probe.textContent = line;
+          widest = Math.max(widest, probe.getBoundingClientRect().width);
+        }
+      }
+    };
+    measureWidest();
+    const fitFs = () => (widest > 0 ? ((vw - vw * cfg.left - 16) / widest) * 100 : Infinity);
+
+    let lay: Layout = computeLayout(items, vw, cfg, fitFs());
 
     let cur = 0;
     let target = 0;
@@ -74,7 +93,7 @@ export default function Spiral({ items }: Props) {
       vh = innerHeight;
       fy = vh * cfg.focus;
       left = vw * cfg.left;
-      lay = computeLayout(items, vw, cfg);
+      lay = computeLayout(items, vw, cfg, fitFs());
       // Зберегти положення стрічки: та сама частка циклу, потім доводка.
       const k = lay.L / prev.L;
       cur = (cur + prevFy) * k - fy;
@@ -84,16 +103,25 @@ export default function Spiral({ items }: Props) {
 
       stage.style.setProperty("--fs", `${lay.fs}px`);
       axis.style.transform = `translate3d(${left}px,0,0)`;
+      // Інфоблок: на desktop — праворуч від зони фокусу; на телефоні — внизу екрана,
+      // на градієнті фону, щоб не перекривав рядки біля фокусу.
       const small = vw < 640;
-      const ix = small ? left : Math.min(Math.max(left + lay.fs * 4.2, vw * 0.55), vw - 320);
-      const iy = small ? fy + lay.fs * 0.75 : fy - 14;
-      info.style.transform = `translate3d(${ix}px,${iy}px,0)`;
+      info.classList.toggle(styles.infoBottom, small);
+      if (small) {
+        info.style.transform = "";
+        info.style.setProperty("--info-left", `${left}px`);
+      } else {
+        const ix = Math.min(Math.max(left + lay.fs * 4.2, vw * 0.55), vw - 320);
+        info.style.transform = `translate3d(${ix}px,${fy - 14}px,0)`;
+      }
     }
 
     measure();
     cur = target = centerForItem(0, 0, lay, fy).pos;
     snapped = true;
     info.style.visibility = "visible";
+    // після підвантаження шрифту ширини рядків інші — переміряти
+    document.fonts?.ready.then(() => { measureWidest(); measure(); });
 
     const touched = () => {
       lastInput = performance.now();

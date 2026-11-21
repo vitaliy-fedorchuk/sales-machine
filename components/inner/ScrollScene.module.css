@@ -14,11 +14,13 @@
   min-height: 100vh;
 }
 
+/* Телефон: номер стоїть над кружечком на самій лінії, тож лінію можна притиснути до краю
+   й віддати місце контенту. */
 @media (max-width: 767px) {
   .scene {
-    --pad-l: 52px;
+    --pad-l: 38px;
     --pad-r: 20px;
-    --axis-x: 30px;
+    --axis-x: 16px;
   }
 }
 
@@ -54,9 +56,15 @@
 
 @media (max-width: 767px) {
   .num {
-    left: 0;
-    width: calc(var(--axis-x) - 10px);
+    left: var(--axis-x);
+    width: auto;
+    padding: 2px 0;
+    /* по центру лінії, над кружечком */
+    transform: translate(-50%, calc(-100% - 8px));
+    background: var(--bg);
     font-size: 10px;
+    text-align: center;
+    transition: color 0.6s ease, background 0.6s ease;
   }
 }
 

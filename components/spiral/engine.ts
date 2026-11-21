@@ -13,8 +13,17 @@ export type Layout = {
 
 export type LayoutConfig = { fontSize: number; step: number; lineGap: number };
 
-export function computeLayout(items: readonly { label: string }[], vw: number, cfg: LayoutConfig): Layout {
-  const fs = Math.min(cfg.fontSize, vw * 0.13);
+/**
+ * @param maxFs — межа розміру шрифту, за якої найширший рядок ще влазить у екран
+ *                (міряється в DOM, див. Spiral.tsx); без неї — лише min(fontSize, 13vw).
+ */
+export function computeLayout(
+  items: readonly { label: string }[],
+  vw: number,
+  cfg: LayoutConfig,
+  maxFs = Infinity,
+): Layout {
+  const fs = Math.min(cfg.fontSize, vw * 0.13, maxFs);
   const step = Math.max((cfg.step * fs) / cfg.fontSize, fs * 0.9);
   const rows: Row[] = [];
   const centers: number[] = [];

@@ -71,7 +71,7 @@
   .back {
     position: absolute;
     top: 20px;
-    left: 52px;
+    left: 38px;
   }
   .arrow {
     width: 50px;
@@ -80,7 +80,7 @@
   .word {
     position: absolute;
     top: 14px;
-    left: 114px;
+    left: 100px;
     font-size: 40px;
   }
 }
