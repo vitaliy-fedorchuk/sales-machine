@@ -28,28 +28,45 @@
   display: none;
 }
 
+/*
+ * Прямокутний перемикач у мові сайту (рамки 1px без заокруглень, як картки й кнопки).
+ * Квадратний повзунок їде з ease «osmo», як панель переходу між сторінками.
+ * Hover: повзунок трохи тягнеться в бік, куди поїде.
+ */
 .sw {
   position: relative;
-  width: 38px;
+  width: 40px;
   height: 22px;
   border: 1px solid var(--ink);
-  border-radius: 999px;
+  overflow: hidden; /* запобіжник: повзунок ніколи не виходить за рамку */
   transition: border-color 0.6s ease;
 }
 
+/* Точка розтягування завжди зліва (зміна transform-origin не анімується й давала стрибок).
+   У темній темі «розтягування вліво» = менший зсув + той самий scaleX, правий край на місці:
+   18px − 14px × 0.45 = 11.7px. */
 .sw i {
   position: absolute;
   top: 3px;
   left: 3px;
   width: 14px;
   height: 14px;
-  border-radius: 50%;
   background: var(--ink);
-  transition: transform 0.45s cubic-bezier(0.6, 0, 0.2, 1), background 0.6s ease;
+  transform-origin: 0 50%;
+  transition: transform 0.5s cubic-bezier(0.625, 0.05, 0, 1), background 0.6s ease;
 }
 
 :global(html[data-theme="dark"]) .sw i {
-  transform: translateX(16px);
+  transform: translateX(18px);
+}
+
+@media (hover: hover) {
+  .toggle:hover .sw i {
+    transform: translateX(0) scaleX(1.45);
+  }
+  :global(html[data-theme="dark"]) .toggle:hover .sw i {
+    transform: translateX(11.7px) scaleX(1.45);
+  }
 }
 
 @media (max-width: 640px) {
