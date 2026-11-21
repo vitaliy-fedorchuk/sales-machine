@@ -9,6 +9,8 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
+    // Міграції й сид — через пряме з'єднання. Neon (Vercel) дає пул у DATABASE_URL і пряме в
+    // DATABASE_URL_UNPOOLED; локально й на своєму сервері є лише DATABASE_URL.
+    url: process.env.DATABASE_URL_UNPOOLED || env("DATABASE_URL"),
   },
 });
