@@ -1,15 +1,17 @@
-import Image from "next/image";
-import type { TeamMember } from "@/lib/pages/o-nas";
+import CaseImg from "@/components/cases/CaseImg";
+import type { CaseImage } from "@/lib/cases/schema";
 import styles from "./TeamList.module.css";
 
 /** «Ядро Sales Machine»: картки людей — фото, роль, ім'я, тези по рядках, Instagram. */
-export default function TeamList({ team }: { team: readonly TeamMember[] }) {
+type Member = { name: string; role: string; photo: CaseImage; lines: string[]; instagram: string };
+
+export default function TeamList({ team }: { team: readonly Member[] }) {
   return (
     <ul className={styles.list}>
       {team.map((m, i) => (
         <li key={m.name} className={styles.card}>
           <div className={styles.photo}>
-            <Image src={m.photo.src} alt={m.name} width={m.photo.w} height={m.photo.h} sizes="(max-width: 767px) 90vw, 20rem" />
+            <CaseImg image={{ ...m.photo, alt: m.photo.alt || m.name }} sizes="(max-width: 767px) 90vw, 20rem" zoom={false} />
           </div>
           <div className={styles.body}>
             <span className={styles.num}>{String(i + 1).padStart(2, "0")}</span>

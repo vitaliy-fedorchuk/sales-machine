@@ -1,5 +1,7 @@
 "use server";
 
+import { db } from "@/lib/server/db";
+
 export type LeadState = { status: "idle" | "ok" | "error"; message?: string };
 
 const FIELDS: Record<string, string> = {
@@ -12,8 +14,8 @@ const FIELDS: Record<string, string> = {
 const clean = (v: FormDataEntryValue | null) => String(v ?? "").trim().slice(0, 500);
 
 /**
- * Заявка з /kurs. Якщо задано TELEGRAM_BOT_TOKEN і TELEGRAM_CHAT_ID — шле повідомлення боту,
- * інакше лише пише в лог сервера (зручно локально, поки бота не підключено).
+ * Заявка з форми сайту: зберігається в базі (адмінка → «Заявки»), а якщо задано TELEGRAM_BOT_TOKEN
+ * і TELEGRAM_CHAT_ID — ще й приходить повідомленням у Telegram.
  */
 export async function sendLead(_prev: LeadState, form: FormData): Promise<LeadState> {
   if (clean(form.get("website"))) return { status: "ok" }; // honeypot: боти заповнюють приховане поле
@@ -25,6 +27,24 @@ export async function sendLead(_prev: LeadState, form: FormData): Promise<LeadSt
     return { status: "error", message: "Укажите имя и номер телефона" };
   }
 
+  // 1) Спершу — в базу: заявка не загубиться, навіть якщо Telegram недоступний чи не налаштований
+  const lead = await db.lead
+    .create({
+      data: {
+        topic,
+        name,
+        phone,
+        telegram: clean(form.get("telegram")),
+        question: clean(form.get("question")),
+        page: clean(form.get("page")).slice(0, 200),
+      },
+    })
+    .catch((e) => {
+      console.error("[lead] db save failed", e);
+      return null;
+    });
+
+  // 2) Повідомлення в Telegram (якщо задано бота)
   const lines = [`📩 Заявка: ${topic}`];
   for (const [key, label] of Object.entries(FIELDS)) {
     const v = clean(form.get(key));
@@ -36,7 +56,7 @@ export async function sendLead(_prev: LeadState, form: FormData): Promise<LeadSt
   const chat = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chat) {
     console.info("[lead]", text);
-    return { status: "ok" };
+    return lead ? { status: "ok" } : { status: "error" };
   }
 
   try {
@@ -47,9 +67,11 @@ export async function sendLead(_prev: LeadState, form: FormData): Promise<LeadSt
       cache: "no-store",
     });
     if (!res.ok) throw new Error(`Telegram ${res.status}`);
+    if (lead) await db.lead.update({ where: { id: lead.id }, data: { notified: true } }).catch(() => {});
     return { status: "ok" };
   } catch (e) {
-    console.error("[lead] send failed", e);
-    return { status: "error" };
+    console.error("[lead] telegram failed", e);
+    // у базі заявка є — для людини все гаразд
+    return lead ? { status: "ok" } : { status: "error" };
   }
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import gsap from "gsap";
-import Image from "next/image";
 import { useEffect, useRef, type CSSProperties } from "react";
-import { CONTACTS } from "@/lib/contacts";
+import { useContacts } from "@/components/ContactsProvider";
+import { srcSetOf } from "@/lib/media/urls";
 import { getLenis } from "./SmoothScroll";
 import styles from "./ContactCta.module.css";
 
@@ -38,7 +38,7 @@ export default function ContactCta({ label, title, text }: { label: string; titl
   const dialogRef = useRef<HTMLDialogElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const sceneRef = useRef<HTMLSpanElement>(null);
-  const { manager } = CONTACTS;
+  const { manager } = useContacts();
 
   useEffect(() => {
     const d = dialogRef.current!;
@@ -114,7 +114,17 @@ export default function ContactCta({ label, title, text }: { label: string; titl
             <span />
             <span />
           </button>
-          <Image className={styles.photo} src={manager.photo} alt={manager.name} width={340} height={340} />
+          {/* eslint-disable-next-line @next/next/no-img-element -- фото з медіатеки або public/ */}
+          <img
+            className={styles.photo}
+            src={manager.photo.src}
+            srcSet={srcSetOf(manager.photo.src)}
+            sizes="21.25rem"
+            alt={manager.photo.alt || manager.name}
+            width={manager.photo.width}
+            height={manager.photo.height}
+            loading="lazy"
+          />
           <div className={styles.body}>
             <h3 id="contact-title" className={styles.title}>{title}</h3>
             <p className={styles.text}>{text}</p>

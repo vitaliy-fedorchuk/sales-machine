@@ -5,14 +5,15 @@ import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
 import TeamList from "@/components/onas/TeamList";
-import { ONAS_PAGE as O, TEAM } from "@/lib/pages/o-nas";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "О нас. Контакты — Sales Machine",
   description: "Sales Machine — инженеры маркетинговых прорывов. Ядро команды: Вадим Шевченко, Тимур Захарченко, Василий Боев, Артём Панченко.",
 };
 
-export default function ONasPage() {
+export default async function ONasPage() {
+  const O = await getContent("team");
   return (
     <>
       <BackLink word={O.word} />
@@ -37,7 +38,7 @@ export default function ONasPage() {
           <h2 id="team-title" className={page.h2} data-axis-mark="02" data-twist>
             {O.teamTitle}
           </h2>
-          <TeamList team={TEAM} />
+          <TeamList team={O.team} />
           <div className={page.ctaWrap}>
             <ContactCta label={O.ctaBottom} title={O.contact.title} text={O.contact.text} />
           </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useActionState, useId } from "react";
 import { sendLead, type LeadState } from "@/app/(inner)/kurs/actions";
 import { CONTACTS } from "@/lib/contacts";
@@ -31,6 +32,7 @@ export default function LeadForm({
 }) {
   const [state, action, pending] = useActionState(sendLead, INITIAL);
   const uid = useId();
+  const pathname = usePathname();
 
   return (
     <div className={styles.wrap}>
@@ -44,6 +46,7 @@ export default function LeadForm({
       ) : (
         <form action={action} className={styles.form}>
           <input type="hidden" name="topic" value={topic} />
+          <input type="hidden" name="page" value={pathname} />
           {/* honeypot — для людей невидиме */}
           <input className={styles.hp} type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
           {fields.map((f) => {

@@ -1258,3 +1258,150 @@ details.card[open] > summary {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- розділи вмісту ---------- */
+.contentCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.contentCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.contentCard strong {
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.contentCard span {
+  font-size: 13px;
+  color: var(--mute);
+}
+
+.contentCard small {
+  margin-top: auto;
+  padding-top: 6px;
+  font: 500 11px/1.2 var(--font-mono), monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.contentCard:hover,
+.contentCard:focus-visible {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.contentCard:hover span,
+.contentCard:hover small,
+.contentCard:focus-visible span,
+.contentCard:focus-visible small {
+  color: inherit;
+  opacity: 0.75;
+}
+
+.contentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 900px;
+}
+
+.itemToggle {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.itemTitle {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemSub {
+  flex: none;
+  max-width: 40%;
+  overflow: hidden;
+  color: var(--mute);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemChevron {
+  margin-left: auto;
+  color: var(--mute);
+}
+
+/* ---------- заявки ---------- */
+.leads {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--grey);
+  font-size: 14px;
+}
+
+.leadNew {
+  border: 2px solid var(--ink);
+}
+
+.leadHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.leadName {
+  font-size: 17px;
+}
+
+.leadTopic {
+  margin: 0;
+  font: 500 11px/1.3 var(--font-mono), monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.navCount {
+  min-width: 20px;
+  padding: 2px 6px;
+  background: var(--ink);
+  color: var(--bg);
+  font: 600 11px/1.2 var(--font-mono), monospace;
+  text-align: center;
+}
+
+.navActive .navCount {
+  background: var(--bg);
+  color: var(--ink);
+}

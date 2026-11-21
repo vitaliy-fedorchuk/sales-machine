@@ -5,11 +5,14 @@ import { usePathname } from "next/navigation";
 import a from "../admin.module.css";
 
 const LINKS = [
+  { href: "/admin/leads", label: "Заявки" },
   { href: "/admin/cases", label: "Кейсы" },
+  { href: "/admin/content", label: "Страницы и списки" },
   { href: "/admin/media", label: "Медиатека" },
 ];
 
-export default function AdminNav() {
+/** newLeads — кількість нових заявок (бейдж біля «Заявки») */
+export default function AdminNav({ newLeads = 0 }: { newLeads?: number }) {
   const path = usePathname();
   return (
     <nav className={a.nav} aria-label="Разделы админки">
@@ -18,6 +21,7 @@ export default function AdminNav() {
         return (
           <Link key={l.href} href={l.href} className={`${a.navLink} ${on ? a.navActive : ""}`} aria-current={on ? "page" : undefined}>
             {l.label}
+            {l.href === "/admin/leads" && newLeads > 0 && <span className={a.navCount}>{newLeads}</span>}
           </Link>
         );
       })}

@@ -5,7 +5,7 @@ import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
 import YearGroups, { pubs } from "@/components/smi/YearGroups";
-import { ARTICLES, SMI_PAGE as S } from "@/lib/pages/smi";
+import { getContent } from "@/lib/content";
 import styles from "./smi.module.css";
 
 export const metadata: Metadata = {
@@ -13,8 +13,10 @@ export const metadata: Metadata = {
   description: "О Sales Machine пишут с 2016 года: публикации в РБК, Коммерсантъ, vc.ru, «Российской газете» и других СМИ.",
 };
 
-export default function SmiPage() {
-  const years = [...new Set(ARTICLES.map((a) => a.year))];
+export default async function SmiPage() {
+  const S = await getContent("smi");
+  const ARTICLES = S.articles;
+  const years = [...new Set(ARTICLES.map((a) => a.year))].sort((x, y) => y.localeCompare(x));
   return (
     <>
       <BackLink word={S.word} />

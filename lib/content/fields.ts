@@ -47,7 +47,8 @@ export const fieldSchema = (f: Field): z.ZodType => {
       return f.required ? s.min(1, `Заполните «${f.label}»`) : s;
     }
     case "url": {
-      const s = z.string().trim().max(1000);
+      // посилання на цитату в статті (#:~:text=…) бувають на кілька тисяч символів
+      const s = z.string().trim().max(4000, `«${f.label}»: слишком длинная ссылка`);
       return f.required
         ? s.regex(URL_RE, `«${f.label}»: нужна ссылка вида https://…`)
         : s.refine((v) => v === "" || URL_RE.test(v), `«${f.label}»: нужна ссылка вида https://…`);
@@ -97,8 +98,8 @@ export const emptyObject = (fields: readonly Field[]) => Object.fromEntries(fiel
 /** Фото зі старих даних ({ src, w, h }) → формат медіатеки */
 export const img = (src: string, width: number, height: number, alt = ""): CaseImage => ({ src, alt, width, height });
 
-export type ContentDef<T = unknown> = {
-  key: string;
+export type ContentDef<T = unknown, K extends string = string> = {
+  key: K;
   /** Назва в адмінці */
   title: string;
   /** Розділ меню адмінки */
@@ -112,4 +113,5 @@ export type ContentDef<T = unknown> = {
   defaults: T;
 };
 
-export const defineContent = <T>(def: ContentDef<T>) => def;
+/** Ключ зберігається як літерал ("smi", "team") — щоб getContent("smi") знав тип даних */
+export const defineContent = <const K extends string, T>(def: ContentDef<T, K>) => def;

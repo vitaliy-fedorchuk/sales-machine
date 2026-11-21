@@ -15,3 +15,5 @@ task/**/*.zip
 # Локальні фото з адмінки та згенерований клієнт Prisma
 /uploads
 /lib/generated
+
+.env*

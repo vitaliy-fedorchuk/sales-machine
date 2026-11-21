@@ -2,14 +2,15 @@
 
 import { useCallback, useState } from "react";
 import ScrollScene from "@/components/inner/ScrollScene";
-import SocialFooter from "@/components/inner/SocialFooter";
+import type { ReactNode } from "react";
 import page from "@/components/inner/page.module.css";
 import { OTZYVY_PAGE as P, type Review } from "@/lib/pages/otzyvy";
 import ReviewModal from "./ReviewModal";
 import ReviewTitles from "./ReviewTitles";
 
 /** Сторінка відгуків: «титри» імен + попап з повним відео. */
-export default function Reviews() {
+/** footer — серверний SocialFooter (читає соцмережі з адмінки), передається зі сторінки */
+export default function Reviews({ footer }: { footer: ReactNode }) {
   const [open, setOpen] = useState<Review | null>(null);
   const close = useCallback(() => setOpen(null), []);
 
@@ -26,7 +27,7 @@ export default function Reviews() {
 
         <ReviewTitles onOpen={setOpen} />
 
-        <SocialFooter />
+        {footer}
       </ScrollScene>
 
       <ReviewModal review={open} onClose={close} />

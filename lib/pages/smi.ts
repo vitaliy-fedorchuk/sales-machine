@@ -80,10 +80,10 @@ const isMasked = (href: string) => {
 };
 
 /** Адреса картки публікації: напряму або через переадресацію (для доменів, які ріжуть блокувальники). */
-export const smiHref = (a: Article) => (isMasked(a.href) ? `/stati-v-smi/go/${ARTICLES.indexOf(a)}` : a.href);
+export const smiHref = (a: Article, index: number) => (isMasked(a.href) ? `/stati-v-smi/go/${index}` : a.href);
 
 /** Куди веде переадресація /stati-v-smi/go/<n> (лише для «замаскованих» посилань). */
-export const smiRedirect = (n: number) => {
-  const a = ARTICLES[n];
+export const smiRedirect = (list: readonly Article[], n: number) => {
+  const a = list[n];
   return a && isMasked(a.href) ? a.href : null;
 };

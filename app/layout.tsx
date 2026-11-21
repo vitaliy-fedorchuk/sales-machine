@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
+import { ContactsProvider } from "@/components/ContactsProvider";
 import Providers from "@/components/Providers";
+import { getContent } from "@/lib/content";
 import ThemeToggle from "@/components/ThemeToggle";
 import PageTransition from "@/components/transition/PageTransition";
 import "./globals.css";
@@ -34,12 +36,13 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const contacts = await getContent("contacts");
   return (
     <html lang="ru" className={`${main.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
         <Providers>
-          {children}
+          <ContactsProvider value={contacts}>{children}</ContactsProvider>
           <ThemeToggle />
           <PageTransition />
         </Providers>
