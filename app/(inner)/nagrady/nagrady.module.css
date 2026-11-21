@@ -1,0 +1,41 @@
+/* Довідка про премії: назва ліворуч, опис праворуч, тонкі розділювачі */
+.glossary {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  margin: 50px 0 0;
+  border-top: 1px solid var(--ink);
+}
+
+.glossary dt,
+.glossary dd {
+  margin: 0;
+  padding: 18px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+.glossary dt {
+  padding-right: 24px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.glossary dd {
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+
+@media (max-width: 767px) {
+  .glossary {
+    grid-template-columns: 1fr;
+  }
+  .glossary dt {
+    padding-bottom: 4px;
+    border-bottom: 0;
+  }
+  .glossary dd {
+    padding-top: 0;
+    font-size: 16px;
+  }
+}

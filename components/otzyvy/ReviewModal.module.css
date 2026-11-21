@@ -1,0 +1,187 @@
+/*
+ * Попап відео підлаштовується під формат:
+ *  .vertical — сторіс/шортс 9:16: високий плеєр ліворуч, текст праворуч;
+ *  .wide     — 16:9: великий плеєр зверху, під ним ім'я | текст у дві колонки.
+ * Окремого скролу в колонці тексту немає: якщо не влазить — гортається весь попап.
+ */
+.dialog {
+  width: fit-content; /* розмір — за вмістом (плеєр + текст), а не на весь екран */
+  max-width: calc(100% - 32px);
+  max-height: calc(100% - 32px);
+  padding: 0;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  color: var(--ink);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.78);
+}
+
+.dialog[open] {
+  animation: pop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+}
+
+.box {
+  position: relative;
+  display: grid;
+}
+
+.player {
+  position: relative;
+  background: #000;
+}
+
+.player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------- вертикальне відео ---------- */
+.vertical {
+  grid-template-columns: auto minmax(320px, 460px);
+}
+
+.vertical .player {
+  height: min(86vh, 860px);
+  aspect-ratio: 9 / 16;
+}
+
+.vertical .info {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 48px 36px 36px;
+}
+
+/* ---------- широке відео ---------- */
+.wide {
+  width: min(1240px, calc(100vw - 32px));
+  grid-template-columns: 1fr;
+}
+
+.wide .player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 64vh;
+}
+
+.wide .info {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 2fr;
+  gap: 40px;
+  padding: 32px 36px 36px;
+}
+
+/* ---------- текст ---------- */
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.num {
+  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.name {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.role {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.vertical .role {
+  padding-bottom: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.text {
+  margin: 0;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--ink) 82%, var(--bg));
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.close span {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  right: 8px;
+  height: 1px;
+  background: var(--ink);
+  transform: rotate(45deg);
+}
+
+.close span + span {
+  transform: rotate(-45deg);
+}
+
+/* ---------- планшет / телефон: усе стовпчиком ---------- */
+@media (max-width: 860px) {
+  .vertical,
+  .wide {
+    width: calc(100vw - 32px);
+    grid-template-columns: 1fr;
+  }
+  /* висота задає розмір, ширина — з пропорції 9:16; по центру на чорному */
+  .vertical .player {
+    width: auto;
+    height: min(72vh, 640px);
+    justify-self: center;
+  }
+  .vertical {
+    background: linear-gradient(#000 0 min(72vh, 640px), transparent 0);
+  }
+  .wide .info,
+  .vertical .info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px 20px 24px;
+  }
+  .name {
+    font-size: 21px;
+  }
+}

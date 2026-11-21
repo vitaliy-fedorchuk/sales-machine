@@ -1,0 +1,177 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 60px;
+  align-items: start;
+  padding-top: 40px;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--ink);
+}
+
+.row {
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+.rowBtn {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 6px 14px;
+  align-items: baseline;
+  width: 100%;
+  padding: 22px 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity 0.4s ease, padding 0.5s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.rowName {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.rowRole {
+  grid-column: 2;
+  max-width: 560px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--mute);
+}
+
+/* наведений — у фокусі й трохи зсунутий, як рядок у фокусі на головній; решта гасне */
+@media (hover: hover) and (min-width: 992px) {
+  .list:hover .row:not(.on) .rowBtn {
+    opacity: 0.3;
+  }
+}
+
+.on .rowBtn {
+  padding-left: 14px;
+}
+
+.rowBtn:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: -1px;
+}
+
+.inline {
+  display: none;
+}
+
+/* ---------- липкий «екран» ---------- */
+.screen {
+  position: sticky;
+  top: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.screenVideo {
+  position: relative;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.screenVideo:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.layerOn {
+  opacity: 1;
+}
+
+.screenVideo:hover video {
+  filter: none;
+}
+
+.screenNum {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 8px;
+  background: var(--ink);
+  color: var(--bg);
+  font: 500 12px/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+}
+
+.screenText {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: textIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes textIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* ---------- планшет / телефон: акордеон ---------- */
+@media (max-width: 991px) {
+  .wrap {
+    grid-template-columns: 1fr;
+  }
+  .screen {
+    display: none;
+  }
+  .inline:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0 0 26px;
+  }
+  .inlineVideo {
+    width: min(100%, 420px);
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .inlineVideo video {
+    filter: none;
+  }
+  .rowName {
+    font-size: 28px;
+  }
+  .on .rowBtn {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 479px) {
+  .rowBtn {
+    grid-template-columns: 26px 1fr;
+    padding: 16px 0;
+  }
+  .rowName {
+    font-size: 22px;
+  }
+}

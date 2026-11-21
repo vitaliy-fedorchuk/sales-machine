@@ -2,6 +2,7 @@ import { DIRECTIONS } from "./directions";
 
 const NAMES: Record<string, string> = {
   "/": "Sales Machine",
+  "/politika-obrabotki-personalnyh-dannyh": "Политика",
   ...Object.fromEntries(DIRECTIONS.map((d) => [d.href, d.label.replace("\n", " ")])),
 };
 
