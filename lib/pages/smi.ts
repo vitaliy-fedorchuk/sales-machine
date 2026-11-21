@@ -70,20 +70,3 @@ export const ARTICLES: readonly Article[] = [
   { year: "2016", title: "Региональные особенности и прогноз на 2017", href: "https://rg.ru/2016/11/22/reg-ufo/pochemu-na-iuge-rossii-silno-podeshevela-nedvizhimost.html#:~:text=-%20%D0%92%20%D0%BA%D0%B0%D0%B6%D0%B4%D0%BE%D0%BC%20%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%D0%B5,%D0%94%D0%BE%D0%BD%D1%81%D0%BA%D0%BE%D0%B9%20%D0%A2%D0%B8%D0%BC%D1%83%D1%80%20%D0%97%D0%B0%D1%85%D0%B0%D1%80%D1%87%D0%B5%D0%BD%D0%BA%D0%BE" },
 ];
 
-// Блокувальники реклами (uBlock, AdGuard з російськими фільтрами) ховають на сторінці посилання на dzen.ru —
-// у сітці лишаються порожні клітинки. Такі посилання ведемо через нашу переадресацію /stati-v-smi/go/<n>.
-const MASKED_HOSTS = ["dzen.ru"];
-const isMasked = (href: string) => {
-  if (!/^https?:/.test(href)) return false; // внутрішні сторінки (/stati/…)
-  const host = new URL(href).hostname;
-  return MASKED_HOSTS.some((h) => host === h || host.endsWith(`.${h}`));
-};
-
-/** Адреса картки публікації: напряму або через переадресацію (для доменів, які ріжуть блокувальники). */
-export const smiHref = (a: Article, index: number) => (isMasked(a.href) ? `/stati-v-smi/go/${index}` : a.href);
-
-/** Куди веде переадресація /stati-v-smi/go/<n> (лише для «замаскованих» посилань). */
-export const smiRedirect = (list: readonly Article[], n: number) => {
-  const a = list[n];
-  return a && isMasked(a.href) ? a.href : null;
-};

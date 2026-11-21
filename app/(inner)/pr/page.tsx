@@ -6,14 +6,15 @@ import QuoteCard from "@/components/inner/QuoteCard";
 import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
-import { PR_PAGE as P } from "@/lib/pages/pr";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "PR — Sales Machine",
   description: "Влияем на мнения и формируем поведение. PR для компаний и личный PR.",
 };
 
-export default function PrPage() {
+export default async function PrPage() {
+  const P = await getContent("pr");
   return (
     <>
       <BackLink word={P.word} />

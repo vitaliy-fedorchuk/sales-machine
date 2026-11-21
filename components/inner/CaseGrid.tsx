@@ -1,3 +1,4 @@
+import { isExternal, outHref } from "@/lib/outlinks";
 import page from "./page.module.css";
 import styles from "./CaseGrid.module.css";
 
@@ -14,8 +15,8 @@ export default function CaseGrid({ title, mark, cases }: { title: string; mark: 
       </h2>
       <ul className={styles.grid}>
         {cases.map((c, i) => (
-          <li key={c.href}>
-            <a className={styles.card} href={c.href} {...(/^https?:/.test(c.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+          <li key={c.title}>
+            <a className={styles.card} href={outHref(c.href)} {...(isExternal(c.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
               <span className={styles.top}>
                 <svg className={styles.arrow} width="41" height="41" viewBox="0 0 41 41" aria-hidden="true">
                   <circle cx="20.5" cy="20.5" r="20" />

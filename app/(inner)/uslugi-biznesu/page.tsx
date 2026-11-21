@@ -5,7 +5,7 @@ import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
 import ServiceList from "@/components/uslugi/ServiceList";
-import { USLUGI_PAGE as U } from "@/lib/pages/uslugi";
+import { getContent } from "@/lib/content";
 import styles from "./uslugi.module.css";
 
 export const metadata: Metadata = {
@@ -13,7 +13,8 @@ export const metadata: Metadata = {
   description: "Идея, концепция, иммерсивный маркетинг, нейминг, сайт, реклама, SMM, продажи, PR — что Sales Machine умеет делать классно.",
 };
 
-export default function UslugiPage() {
+export default async function UslugiPage() {
+  const U = await getContent("uslugi");
   return (
     <>
       <BackLink word={U.word} />

@@ -94,7 +94,7 @@ export default function CaseSections({ cases }: { cases: readonly Case[] }) {
             </div>
             <ul className={`${grid.grid} ${styles.grid}`}>
               {g.items.map((it) => (
-                <CaseCard key={it.href} item={it} />
+                <CaseCard key={it.title} item={it} />
               ))}
             </ul>
           </section>

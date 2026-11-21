@@ -7,7 +7,7 @@ import QuoteCard from "@/components/inner/QuoteCard";
 import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
-import { IMMERSIVE_PAGE as I } from "@/lib/pages/immersivnyy-marketing";
+import { getContent } from "@/lib/content";
 import styles from "./immersive.module.css";
 
 export const metadata: Metadata = {
@@ -15,7 +15,8 @@ export const metadata: Metadata = {
   description: "Иммерсивный маркетинг — формирование у клиента эмоционально окрашенного опыта владения товаром или услугой в будущем.",
 };
 
-export default function ImmersivePage() {
+export default async function ImmersivePage() {
+  const I = await getContent("immersive");
   return (
     <>
       <BackLink word={I.word} />

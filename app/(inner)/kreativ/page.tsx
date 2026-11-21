@@ -6,14 +6,15 @@ import QuoteCard from "@/components/inner/QuoteCard";
 import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
-import { KREATIV_PAGE as K } from "@/lib/pages/kreativ";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Креатив — Sales Machine",
   description: "Креативность ждет, пока вымотается заурядность. Наружная реклама, нейминг, креатив, о котором говорят.",
 };
 
-export default function KreativPage() {
+export default async function KreativPage() {
+  const K = await getContent("kreativ");
   return (
     <>
       <BackLink word={K.word} />

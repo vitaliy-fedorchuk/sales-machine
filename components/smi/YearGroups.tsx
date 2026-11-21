@@ -1,6 +1,7 @@
 import page from "@/components/inner/page.module.css";
 import cards from "@/components/inner/CaseGrid.module.css";
-import { smiHref, type Article } from "@/lib/pages/smi";
+import { isExternal, outHref } from "@/lib/outlinks";
+import type { Article } from "@/lib/pages/smi";
 import styles from "./YearGroups.module.css";
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -33,7 +34,7 @@ export default function YearGroups({ articles, startMark = 2 }: { articles: read
             <ul className={cards.grid}>
               {list.map((a) => (
                 <li key={`${a.year}-${a.title}`}>
-                  <a className={cards.card} href={smiHref(a, articles.indexOf(a))} {...(/^https?:/.test(a.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+                  <a className={cards.card} href={outHref(a.href)} {...(isExternal(a.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
                     <span className={cards.top}>
                       <svg className={cards.arrow} width="41" height="41" viewBox="0 0 41 41" aria-hidden="true">
                         <circle cx="20.5" cy="20.5" r="20" />

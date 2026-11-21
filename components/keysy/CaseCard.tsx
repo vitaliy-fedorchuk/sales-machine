@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { forwardRef } from "react";
+import { outHref } from "@/lib/outlinks";
 import { CATEGORIES, type Case } from "@/lib/pages/keysy";
 import styles from "./keysy.module.css";
 
@@ -23,7 +24,7 @@ const CaseCard = forwardRef<HTMLLIElement, Props>(function CaseCard({ item }, re
         <span className={styles.cats}>{item.cats.map((c) => LABEL[c]).join(" · ")}</span>
       </Link>
       ) : (
-        <a className={styles.card} href={item.href} target="_blank" rel="noopener noreferrer">
+        <a className={styles.card} href={outHref(item.href)} target="_blank" rel="noopener noreferrer">
         <span className={styles.cardTop}>
           <span className={styles.cardTitle}>{item.title}</span>
           <svg className={styles.arrow} width="40" height="40" viewBox="0 0 41 41" aria-hidden="true">

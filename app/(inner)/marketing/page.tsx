@@ -6,14 +6,15 @@ import QuoteCard from "@/components/inner/QuoteCard";
 import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
-import { MARKETING_PAGE as M } from "@/lib/pages/marketing";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Маркетинг — Sales Machine",
   description: "Продавать дороже и быстрее рынка: маркетинговая стратегия, тактика и рост продаж.",
 };
 
-export default function MarketingPage() {
+export default async function MarketingPage() {
+  const M = await getContent("marketing");
   return (
     <>
       <BackLink word={M.word} />

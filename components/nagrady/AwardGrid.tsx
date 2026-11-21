@@ -1,7 +1,19 @@
-import Image from "next/image";
 import type { ReactNode } from "react";
 import page from "@/components/inner/page.module.css";
-import type { Award } from "@/lib/pages/nagrady";
+import type { CaseImage } from "@/lib/cases/schema";
+import { srcSetOf } from "@/lib/media/urls";
+import { outHref } from "@/lib/outlinks";
+
+/** Нагорода — як її редагують в адмінці («Награды») */
+export type AwardView = {
+  logo: CaseImage | null;
+  city: string;
+  year: string;
+  items: string[];
+  noteTitle: string;
+  noteText: string;
+  href: string;
+};
 import styles from "./AwardGrid.module.css";
 
 // 1 награда, 2–4 награды, 5+ наград
@@ -21,7 +33,7 @@ export default function AwardGrid({
 }: {
   title: string;
   mark: string;
-  awards: readonly Award[];
+  awards: readonly AwardView[];
   children?: ReactNode;
 }) {
   return (
@@ -32,11 +44,12 @@ export default function AwardGrid({
       <ul className={styles.grid}>
         {awards.map((a, i) => (
           <li key={`${a.year}-${i}`} className={styles.cell}>
-            <a className={styles.card} href={a.href} target="_blank" rel="noopener noreferrer">
+            <a className={styles.card} href={outHref(a.href)} target="_blank" rel="noopener noreferrer">
               <span className={styles.top}>
                 {a.logo ? (
                   <span className={styles.logo}>
-                    <Image src={a.logo.src} alt={a.logo.alt} width={a.logo.w} height={a.logo.h} />
+                    {/* eslint-disable-next-line @next/next/no-img-element -- логотип з медіатеки або public/ */}
+                    <img src={a.logo.src} srcSet={srcSetOf(a.logo.src)} sizes="16rem" alt={a.logo.alt} width={a.logo.width} height={a.logo.height} loading="lazy" />
                   </span>
                 ) : (
                   <span className={styles.year}>{a.year}</span>
@@ -64,9 +77,9 @@ export default function AwardGrid({
                 ))}
               </ul>
 
-              {a.note && (
+              {(a.noteTitle || a.noteText) && (
                 <span className={styles.note}>
-                  <strong>{a.note.title}:</strong> {a.note.text}
+                  {a.noteTitle && <strong>{a.noteTitle}:</strong>} {a.noteText}
                 </span>
               )}
             </a>

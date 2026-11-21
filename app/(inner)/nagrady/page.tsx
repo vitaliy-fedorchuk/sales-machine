@@ -6,7 +6,7 @@ import ScrollScene from "@/components/inner/ScrollScene";
 import SocialFooter from "@/components/inner/SocialFooter";
 import page from "@/components/inner/page.module.css";
 import AwardGrid from "@/components/nagrady/AwardGrid";
-import { AWARD_GLOSSARY, AWARDS, NAGRADY_PAGE as N, VIDEO_AWARDS } from "@/lib/pages/nagrady";
+import { getContent } from "@/lib/content";
 import styles from "./nagrady.module.css";
 
 export const metadata: Metadata = {
@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   description: "Награды Sales Machine: European Property Awards, WOW Awards, «Девелопер года», ReMovie Awards, Urban Awards.",
 };
 
-export default function NagradyPage() {
+export default async function NagradyPage() {
+  const N = await getContent("nagrady");
   return (
     <>
       <BackLink word={N.word} />
@@ -33,9 +34,9 @@ export default function NagradyPage() {
           </div>
         </section>
 
-        <AwardGrid title={N.awardsTitle} mark="02" awards={AWARDS}>
+        <AwardGrid title={N.awardsTitle} mark="02" awards={N.awards}>
           <dl className={styles.glossary}>
-            {AWARD_GLOSSARY.map((g) => (
+            {N.glossary.map((g) => (
               <div key={g.term} style={{ display: "contents" }}>
                 <dt>{g.term}</dt>
                 <dd data-reveal>{g.text}</dd>
@@ -44,7 +45,7 @@ export default function NagradyPage() {
           </dl>
         </AwardGrid>
 
-        <AwardGrid title={N.videoTitle} mark="03" awards={VIDEO_AWARDS} />
+        <AwardGrid title={N.videoTitle} mark="03" awards={N.video} />
 
         <section className={page.section}>
           <div className={page.ctaWrap}>
