@@ -12,6 +12,7 @@ export default function CaseImg({
   zoom = true,
   caption,
   eager,
+  noUpscale,
 }: {
   image: CaseImage;
   className?: string;
@@ -19,6 +20,8 @@ export default function CaseImg({
   zoom?: boolean;
   caption?: string;
   eager?: boolean;
+  /** Не розтягувати більше за реальну ширину файлу (малі фото інакше «пливуть») */
+  noUpscale?: boolean;
 }) {
   const srcSet = srcSetOf(image.src);
   return (
@@ -31,6 +34,7 @@ export default function CaseImg({
       width={image.width}
       height={image.height}
       className={className}
+      style={noUpscale && image.width ? { maxWidth: `${image.width}px` } : undefined}
       loading={eager ? "eager" : "lazy"}
       decoding="async"
       draggable={false}

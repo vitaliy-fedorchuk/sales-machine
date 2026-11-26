@@ -15,12 +15,12 @@ const hashToken = (token: string) => createHash("sha256").update(token).digest("
 const isSecure = () => (process.env.SITE_URL ?? "").startsWith("https://");
 
 /** Створює сесію і ставить cookie. Викликати лише з server action / route handler. */
-export const createSession = async (userId: string) => {
+export const createSession = async (userId: string, ip?: string) => {
   const token = randomBytes(32).toString("base64url");
   const expiresAt = new Date(Date.now() + SESSION_DAYS * DAY);
   const userAgent = (await headers()).get("user-agent")?.slice(0, 300) ?? null;
 
-  await db.session.create({ data: { id: hashToken(token), userId, expiresAt, userAgent } });
+  await db.session.create({ data: { id: hashToken(token), userId, expiresAt, userAgent, ip: ip?.slice(0, 64) ?? null } });
 
   (await cookies()).set(SESSION_COOKIE, token, {
     httpOnly: true, // недоступна з JavaScript — не вкрадеш через XSS
@@ -39,6 +39,19 @@ export const deleteSession = async () => {
   jar.delete(SESSION_COOKIE);
 };
 
+/** id (хеш) сесії цього браузера — щоб відрізнити її в списку й не завершити разом з іншими */
+export const currentSessionId = async () => {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  return token ? hashToken(token) : null;
+};
+
+/** Завершити всі сесії користувача, крім поточної («Выйти на других устройствах», зміна пароля) */
+export const deleteOtherSessions = async (userId: string) => {
+  const current = await currentSessionId();
+  const { count } = await db.session.deleteMany({ where: { userId, ...(current && { id: { not: current } }) } });
+  return count;
+};
+
 /**
  * Поточний користувач або null. cache() — один запит до бази на рендер,
  * скільки б компонентів його не питали.
@@ -49,7 +62,7 @@ export const getCurrentUser = cache(async () => {
 
   const session = await db.session.findUnique({
     where: { id: hashToken(token) },
-    include: { user: { select: { id: true, email: true, name: true, role: true } } },
+    include: { user: { select: { id: true, email: true, name: true, role: true, totpSecret: true } } },
   });
   if (!session) return null;
 
@@ -57,7 +70,9 @@ export const getCurrentUser = cache(async () => {
     await db.session.delete({ where: { id: session.id } }).catch(() => {});
     return null;
   }
-  return session.user;
+  const { totpSecret, ...user } = session.user;
+  // секрет 2FA далі не передаємо — лише чи ввімкнено
+  return { ...user, has2fa: !!totpSecret };
 });
 
 export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;

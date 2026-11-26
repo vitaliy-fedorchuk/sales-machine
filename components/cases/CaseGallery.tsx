@@ -30,7 +30,7 @@ export default function CaseGallery({ images }: { images: readonly CaseImage[] }
       <ul ref={trackRef} className={styles.track} tabIndex={0} aria-label="Галерея">
         {images.map((im, i) => (
           <li key={im.src} className={styles.slide} aria-label={`${i + 1} из ${images.length}`}>
-            <CaseImg image={im} className={styles.img} />
+            <CaseImg image={im} className={styles.img} noUpscale />
           </li>
         ))}
       </ul>

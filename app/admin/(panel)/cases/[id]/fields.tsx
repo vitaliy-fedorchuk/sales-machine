@@ -5,7 +5,7 @@ import { closestCenter, DndContext, PointerSensor, useSensor, useSensors, type D
 import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { CaseImage } from "@/lib/cases/schema";
-import { variantOf, type MediaItem } from "@/lib/media/urls";
+import { SHARP_MIN_WIDTH, variantOf, type MediaItem } from "@/lib/media/urls";
 import a from "../../../admin.module.css";
 import { Icon } from "../../../icons";
 import MediaPicker from "../../media/MediaPicker";
@@ -86,6 +86,10 @@ export const RICH_HINT = (
   </>
 );
 
+/** Фото замале для повної ширини кейсу — на сайті покажеться не ширше за оригінал */
+const lowRes = (img: CaseImage) => img.width > 0 && img.width < SHARP_MIN_WIDTH;
+const LOW_RES_TIP = `Низкое разрешение — на сайте фото будет нечётким или узким. Загрузите оригинал шириной от ${SHARP_MIN_WIDTH} px.`;
+
 const toImage = (m: MediaItem): CaseImage => ({ src: m.url, alt: m.alt, width: m.width, height: m.height });
 
 /** Одне фото: прев'ю, «Выбрать / Заменить», опис */
@@ -124,6 +128,11 @@ export function ImageInput({
             </button>
           )}
         </div>
+        {has && lowRes(image!) && (
+          <p className={a.lowResNote}>
+            {image!.width}×{image!.height} px. {LOW_RES_TIP}
+          </p>
+        )}
         {has && (
           <input
             className={a.input}
@@ -162,6 +171,11 @@ function SortableThumb({ img, n, onRemove }: { img: CaseImage; n: number; onRemo
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={variantOf(img.src, 480)} alt={img.alt} draggable={false} />
       <span className={a.thumbNum}>{String(n).padStart(2, "0")}</span>
+      {lowRes(img) && (
+        <span className={a.thumbLowRes} title={LOW_RES_TIP}>
+          {img.width} px
+        </span>
+      )}
       <button
         type="button"
         className={a.thumbRemove}
@@ -184,8 +198,17 @@ export function ImagesInput({ images, onChange }: { images: CaseImage[]; onChang
     if (!over || active.id === over.id) return;
     onChange(arrayMove(images, images.findIndex((i) => i.src === active.id), images.findIndex((i) => i.src === over.id)));
   };
+  const low = images.filter(lowRes).length;
   return (
-    <Field label={`Фото галереи · ${images.length}`} hint="Перетаскивайте миниатюры, чтобы поменять порядок слайдов.">
+    <Field
+      label={`Фото галереи · ${images.length}`}
+      hint={`Перетаскивайте миниатюры, чтобы поменять порядок слайдов. Для чёткости — фото шириной от ${SHARP_MIN_WIDTH} px.`}
+    >
+      {low > 0 && (
+        <p className={a.lowResNote}>
+          Низкое разрешение у {low} из {images.length} фото (помечены жёлтым) — замените их оригиналами пошире: «×» убрать, «Добавить фото» загрузить новое.
+        </p>
+      )}
       {images.length > 0 && (
         <DndContext id={dndId} sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
           <SortableContext items={images.map((i) => i.src)} strategy={rectSortingStrategy}>

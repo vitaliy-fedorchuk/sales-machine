@@ -9,6 +9,8 @@
 export const MEDIA_WIDTHS = [480, 960, 1600, 2400] as const;
 export type MediaWidth = (typeof MEDIA_WIDTHS)[number];
 export const MAIN_WIDTH: MediaWidth = 1600;
+/** Фото вужче за це — на всю ширину кейсу буде мило; в адмінці показуємо попередження */
+export const SHARP_MIN_WIDTH = 1600;
 
 const VARIANT = /^(.+\/\d{4}\/\d{2}\/m[a-z0-9]+)-(480|960|1600|2400)\.webp$/;
 

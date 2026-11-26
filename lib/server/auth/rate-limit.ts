@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 import { db } from "../db";
 
 /** Скільки невдалих спроб дозволено за вікно — окремо на пошту й на IP */
-const MAX_PER_EMAIL = 5;
-const MAX_PER_IP = 20;
+export const MAX_PER_EMAIL = 5;
+export const MAX_PER_IP = 20;
 const WINDOW_MS = 15 * 60 * 1000;
 
 /** IP відвідувача. На Vercel справжній IP — у x-real-ip / x-forwarded-for. */
@@ -22,10 +22,17 @@ export const isLoginBlocked = async (email: string, ip: string) => {
   return byEmail >= MAX_PER_EMAIL || byIp >= MAX_PER_IP;
 };
 
+/** Записати невдалу спробу. Повертає true, якщо саме ця спроба вичерпала ліміт (вхід заблоковано на 15 хв). */
 export const recordFailedLogin = async (email: string, ip: string) => {
   await db.loginAttempt.create({ data: { email, ip } });
   // Прибираємо старі записи, щоб таблиця не росла
   await db.loginAttempt.deleteMany({ where: { createdAt: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) } } });
+  const since = new Date(Date.now() - WINDOW_MS);
+  const [byEmail, byIp] = await Promise.all([
+    db.loginAttempt.count({ where: { email, createdAt: { gte: since } } }),
+    db.loginAttempt.count({ where: { ip, createdAt: { gte: since } } }),
+  ]);
+  return byEmail === MAX_PER_EMAIL || byIp === MAX_PER_IP;
 };
 
 export const clearFailedLogins = (email: string) => db.loginAttempt.deleteMany({ where: { email } });

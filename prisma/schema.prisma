@@ -89,6 +89,12 @@ model User {
   passwordHash String
   role         UserRole    @default(EDITOR)
   lastLoginAt  DateTime?
+  /// 2FA (TOTP, Google Authenticator): секрет base32; null — 2FA вимкнено
+  totpSecret   String?
+  /// Секрет, що підключається: стає totpSecret після підтвердження першим кодом
+  totpPending  String?
+  /// Номер 30-секундного кроку останнього прийнятого коду — той самий код двічі не пройде
+  totpLastStep Int?
   sessions     Session[]
   media        Media[]
   casesCreated Case[]      @relation("CaseCreatedBy")
@@ -108,6 +114,7 @@ model Session {
   userId    String
   expiresAt DateTime
   userAgent String?
+  ip        String?
   createdAt DateTime @default(now())
 
   @@index([userId])

@@ -24,6 +24,7 @@ export default async function PanelLayout({ children }: { children: ReactNode })
             <br />
             <span className={a.muted}>{user.email}</span>
           </span>
+          <Link href="/admin/account">Профиль и безопасность</Link>
           <Link href="/" target="_blank">
             Открыть сайт ↗
           </Link>
@@ -34,7 +35,15 @@ export default async function PanelLayout({ children }: { children: ReactNode })
           </form>
         </div>
       </aside>
-      <main className={a.main}>{children}</main>
+      <main className={a.main}>
+        {!user.has2fa && (
+          <div className={a.securityBanner}>
+            <span>Двухфакторная защита не включена — вход в админку держится только на пароле.</span>
+            <Link href="/admin/account">Включить →</Link>
+          </div>
+        )}
+        {children}
+      </main>
     </div>
   );
 }
