@@ -59,6 +59,28 @@
   color: var(--ink);
 }
 
+/* Кількість кейсів біля заголовка розділу — квадратний бейдж */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.3125rem;
+  border: 1px solid currentColor;
+  font: 600 0.75rem/1 var(--font-mono), ui-monospace, monospace;
+}
+
+.headCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
 /* активний пункт зсувається, як рядок у фокусі на головній */
 .indexActive {
   padding-left: 0.625rem;

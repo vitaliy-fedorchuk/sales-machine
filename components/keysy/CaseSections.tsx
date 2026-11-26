@@ -9,6 +9,13 @@ import grid from "./keysy.module.css";
 import styles from "./CaseSections.module.css";
 
 const pad = (n: number) => String(n).padStart(2, "0");
+// 1 кейс, 2–4 кейса, 5+ кейсов (і 11–14 — кейсов)
+const plural = (n: number) => {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return "кейс";
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return "кейса";
+  return "кейсов";
+};
 
 // Кожен кейс — один раз, у своїй першій категорії (інші видно в підписі картки).
 const groupsOf = (cases: readonly Case[]) =>
@@ -76,6 +83,11 @@ export default function CaseSections({ cases }: { cases: readonly Case[] }) {
               <h2 id={`cat-${g.id}`} className={page.h2} data-axis-mark={pad(i + 2)} data-twist>
                 {g.label}
               </h2>
+              {/* кількість — лише біля заголовка розділу; у змісті зліва цифр немає */}
+              <span className={styles.headCount}>
+                <span className={styles.badge}>{g.items.length}</span>
+                {plural(g.items.length)}
+              </span>
             </div>
             <ul className={`${grid.grid} ${styles.grid}`}>
               {g.items.map((it) => (
