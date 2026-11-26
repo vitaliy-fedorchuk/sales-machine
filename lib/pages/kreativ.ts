@@ -26,13 +26,13 @@ export const KREATIV_PAGE = {
   },
   casesTitle: "Кейсы",
   cases: [
-    { title: "Виральный шедевр с многомиллионным охватом. Креатив в наружной рекламе", href: "https://vc.ru/offline/42050-3-bilborda-na-granice-batayska-shtat-rostov" },
+    { title: "Виральный шедевр с многомиллионным охватом. Креатив в наружной рекламе", href: "/stati/3-bilborda-na-granice-batayska" },
     { title: "Креативная реклама жилого комплекса, которая продает больше", href: "https://plus.rbc.ru/news/59ededfa7a8aa961fd0ece1c" },
     { title: "Голос Gucci в рекламе застройщика", href: "/stati/golos-gucci-v-reklame-zastroyshchika" },
     { title: "Название улицы, о которой говорят все вокруг", href: "https://digitalbands.notion.site/We-dragged-our-competitors-into-a-chess-game-and-mated-them-in-6-moves-3ede0b424d0b4e0c80f0474dad801bd5" },
     { title: "Реклама, которую заметил губернатор за один день", href: "https://t.me/immersivniy/440" },
     { title: "Первый в России робот-консьерж", href: "https://secretmag.ru/news/v-rostovskoi-oblasti-poyavilsya-pervyi-v-rossii-robot-konserzh-01-08-2017.htm" },
-    { title: "Иногда мы делаем хороший креатив. Забавы ради. Например, как наш баттл с Брусникой", href: "https://vc.ru/marketing/577374-feyki-rulyat-istoriya-odnoy-poddelki-kotoraya-prevzoshla-original" },
+    { title: "Иногда мы делаем хороший креатив. Забавы ради. Например, как наш баттл с Брусникой", href: "/stati/feyki-rulyat-batl-s-brusnikoy" },
     { title: "Креативный нейминг для сети офлайн интерьерных магазинов", href: "/stati/kak-my-pridumali-nazvanie-dlya-magazina-interernyh-veshchey" },
   ],
 } as const;

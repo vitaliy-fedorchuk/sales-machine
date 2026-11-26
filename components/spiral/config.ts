@@ -18,7 +18,7 @@ export const SPIRAL = {
   weight: 500,
   tone: true,        // колір рядка від ink (0°) до grey (maxAngle)
   blur: true,        // blur(0…2.2px) пропорційно куту
-  hover: { dim: 0.2, unwind: 0, ease: 0.06 },
+  hover: { dim: 0.62, unwind: 0, ease: 0.06 }, // dim — наскільки гаснуть інші пункти при наведенні
   theme: { ease: 0.07 },
 } as const;
 

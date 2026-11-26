@@ -27,6 +27,7 @@ export default function ThemeToggle() {
       className={`${styles.toggle} ${pathname === "/" ? "" : styles.inner}`}
       aria-pressed={mounted ? resolvedTheme === "dark" : undefined}
       onClick={toggle}
+      data-theme-toggle
     >
       <span className={styles.toLight}>Светлая тема</span>
       <span className={styles.toDark}>Тёмная тема</span>

@@ -3,6 +3,8 @@ import { JetBrains_Mono, Manrope } from "next/font/google";
 import type { ReactNode } from "react";
 import { ContactsProvider } from "@/components/ContactsProvider";
 import Providers from "@/components/Providers";
+import SiteCode from "@/components/SiteCode";
+import { headMetas } from "@/lib/siteCode";
 import { getContent } from "@/lib/content";
 import ThemeToggle from "@/components/ThemeToggle";
 import PageTransition from "@/components/transition/PageTransition";
@@ -37,15 +39,21 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const contacts = await getContent("contacts");
+  const [contacts, code] = await Promise.all([getContent("contacts"), getContent("code")]);
   return (
     <html lang="ru" className={`${main.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        {headMetas(code.head).map((m, i) => (
+          <meta key={i} {...m} />
+        ))}
+      </head>
       <body>
         <Providers>
           <ContactsProvider value={contacts}>{children}</ContactsProvider>
           <ThemeToggle />
           <PageTransition />
         </Providers>
+        <SiteCode code={code} />
       </body>
     </html>
   );

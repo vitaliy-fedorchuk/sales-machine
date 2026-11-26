@@ -91,7 +91,7 @@
   margin: 0;
   padding-bottom: 0.625rem;
   border-bottom: 1px solid var(--grey);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.2;
   text-transform: uppercase;
@@ -100,8 +100,8 @@
 .role {
   margin: 0;
   overflow-wrap: anywhere;
-  color: var(--mute);
-  font-size: 0.9375rem;
+  color: color-mix(in srgb, var(--ink) 72%, var(--bg));
+  font-size: 1rem;
   line-height: 1.4;
 }
 

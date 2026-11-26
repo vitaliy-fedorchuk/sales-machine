@@ -34,7 +34,7 @@
 }
 
 .rowName {
-  font-size: 2.5rem;
+  font-size: 1.875rem;
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.01em;
@@ -43,10 +43,10 @@
 
 .rowRole {
   grid-column: 2;
-  max-width: 35rem;
-  font-size: 0.875rem;
+  max-width: 38rem;
+  font-size: 1.125rem;
   line-height: 1.4;
-  color: var(--mute);
+  color: color-mix(in srgb, var(--ink) 72%, var(--bg));
 }
 
 /* наведений — у фокусі й трохи зсунутий, як рядок у фокусі на головній; решта гасне */
@@ -159,7 +159,7 @@
     filter: none;
   }
   .rowName {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
   .on .rowBtn {
     padding-left: 0;
@@ -172,6 +172,9 @@
     padding: 1rem 0;
   }
   .rowName {
-    font-size: 1.375rem;
+    font-size: 1.1875rem;
+  }
+  .rowRole {
+    font-size: 1rem;
   }
 }

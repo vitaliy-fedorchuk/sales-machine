@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Review } from "@/lib/pages/otzyvy";
+import PersonNames from "./PersonNames";
 import PreviewVideo from "./PreviewVideo";
 import ReviewActions from "./ReviewActions";
 import s from "./otzyvy.module.css";
@@ -29,7 +30,9 @@ export default function ReviewTitles({ reviews: REVIEWS, onOpen }: { reviews: re
               onClick={() => (i === active && matchMedia("(min-width: 992px)").matches ? onOpen(r) : setActive(i))}
             >
               <span className={s.num}>{r.id}</span>
-              <span className={styles.rowName}>{r.name}</span>
+              <span className={styles.rowName}>
+                <PersonNames name={r.name} />
+              </span>
               <span className={styles.rowRole}>{r.role}</span>
             </button>
 

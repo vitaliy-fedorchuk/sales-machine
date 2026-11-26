@@ -3,7 +3,8 @@
 /*
  * 404 — міні-гра «рогатка» (за мотивами Osmo 404 Minigame, переписана під React і монохром сайту).
  * Тягни ручку внизу → відпусти → ракета летить з інерцією й збиває цілі:
- * логотип, цифри «404», підпис і мух. Збив усе — екран з часом і «Ещё раз».
+ * цифри «404», підпис, перемикач теми й мух. Що менше мух лишилось — то швидше літають решта
+ * (кожна зі своєю швидкістю). Збив усе — екран з часом і «Ещё раз».
  */
 
 import gsap from "gsap";
@@ -23,7 +24,15 @@ const CONFIG = {
   flyMinDuration: 1.5,
   flyMaxDuration: 3,
   flyRotateDuration: 1,
+  flies: 8,
+  /** Швидкість мухи: множник тривалості перельоту (менше — швидше), у кожної свій */
+  flySpeed: [0.7, 1.4] as const,
+  /** Остання муха літає в стільки разів швидше за повну зграю */
+  lastFlyBoost: 3,
 };
+
+/** Цілі поза грою (фіксований перемикач теми) */
+const OUTSIDE_TARGETS = "[data-theme-toggle]";
 
 type Status = "ready" | "running" | "finished";
 
@@ -45,11 +54,24 @@ export default function NotFoundGame() {
     const line = lineRef.current!;
     const flies = Array.from(root.querySelectorAll<HTMLElement>("[data-fly]"));
 
+    const outside = () => Array.from(document.querySelectorAll<HTMLElement>(OUTSIDE_TARGETS));
     const targets = () =>
-      Array.from(root.querySelectorAll<HTMLElement>("[data-target]")).filter((el) => getComputedStyle(el).display !== "none");
+      [...root.querySelectorAll<HTMLElement>("[data-target]"), ...outside()].filter((el) => {
+        if (getComputedStyle(el).display === "none") return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0;
+      });
     let all = targets();
     const hit = new Set<HTMLElement>();
     const flyTweens = new Map<HTMLElement, gsap.core.Tween>();
+    const flySpeed = new Map<HTMLElement, number>();
+    // 1 — уся зграя жива; для останньої мухи — 1 / lastFlyBoost
+    const pace = () => {
+      const alive = flies.filter((f) => !hit.has(f)).length;
+      if (flies.length < 2) return 1;
+      const k = (alive - 1) / (flies.length - 1);
+      return 1 / CONFIG.lastFlyBoost + (1 - 1 / CONFIG.lastFlyBoost) * k;
+    };
     let rocketTween: gsap.core.Tween | null = null;
     let flying = false;
     let startTime = 0;
@@ -91,13 +113,14 @@ export default function NotFoundGame() {
       const ny = gsap.utils.random(0, maxY);
       const cur = fly.getBoundingClientRect();
       const angle = (Math.atan2(ny - (cur.top - rect.top), nx - (cur.left - rect.left)) * 180) / Math.PI + 90;
-      gsap.to(fly, { rotation: angle, duration: CONFIG.flyRotateDuration, ease: "elastic.out(1,0.75)" });
+      const k = (flySpeed.get(fly) ?? 1) * pace();
+      gsap.to(fly, { rotation: angle, duration: CONFIG.flyRotateDuration * Math.max(0.5, k), ease: "elastic.out(1,0.75)", overwrite: "auto" });
       flyTweens.set(
         fly,
         gsap.to(fly, {
           left: nx,
           top: ny,
-          duration: gsap.utils.random(CONFIG.flyMinDuration, CONFIG.flyMaxDuration),
+          duration: gsap.utils.random(CONFIG.flyMinDuration, CONFIG.flyMaxDuration) * k,
           ease: "power1.inOut",
           onComplete: () => moveFly(fly),
         }),
@@ -119,6 +142,7 @@ export default function NotFoundGame() {
       rect = root.getBoundingClientRect();
       flies.forEach((fly) => {
         flyTweens.get(fly)?.kill();
+        flySpeed.set(fly, gsap.utils.random(CONFIG.flySpeed[0], CONFIG.flySpeed[1]));
         gsap.set(fly, {
           left: gsap.utils.random(0, rect.width - fly.offsetWidth),
           top: gsap.utils.random(0, rect.height - fly.offsetHeight),
@@ -152,6 +176,14 @@ export default function NotFoundGame() {
           hit.add(t);
           flyTweens.get(t)?.kill();
           explode(t, tr);
+          // збили муху — решта лякаються й одразу летять далі, вже швидше
+          if (flies.includes(t)) {
+            for (const f of flies) {
+              if (hit.has(f)) continue;
+              flyTweens.get(f)?.kill();
+              moveFly(f);
+            }
+          }
           setScore({ hit: hit.size, total: all.length });
           if (hit.size === all.length) {
             setTime(((Date.now() - startTime) / 1000).toFixed(2));
@@ -233,18 +265,17 @@ export default function NotFoundGame() {
       rocketTween?.kill();
       flyTweens.forEach((t) => t.kill());
       gsap.killTweensOf(flies);
+      // перемикач теми живе поза сторінкою — повернути йому вигляд
+      outside().forEach((el) => {
+        gsap.killTweensOf(el);
+        gsap.set(el, { clearProps: "opacity,scale,pointerEvents" });
+      });
       root.querySelectorAll(`.${styles.dot}`).forEach((d) => d.remove());
     };
   }, []);
 
   return (
     <section ref={rootRef} className={styles.game} data-status={status}>
-      <header className={styles.nav}>
-        <Link href="/" className={styles.logo} data-target>
-          Sales Machine
-        </Link>
-      </header>
-
       <div className={styles.center}>
         <p className={styles.eyebrow} data-target>
           Страница не найдена
@@ -279,7 +310,7 @@ export default function NotFoundGame() {
         </div>
       </div>
 
-      {[0, 1].map((i) => (
+      {Array.from({ length: CONFIG.flies }, (_, i) => (
         <div key={i} className={styles.fly} data-fly data-target aria-hidden="true">
           <svg viewBox="0 0 40 40" width="100%">
             <ellipse className={styles.wing} cx="12" cy="15" rx="9" ry="6" transform="rotate(-30 12 15)" />

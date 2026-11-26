@@ -19,4 +19,5 @@ export const DIRECTIONS: readonly Direction[] = [
   { label: "Статьи в СМИ",           sub: "О нас пишут с 2016 года",                             href: "/stati-v-smi" },
   { label: "Услуги бизнесу",         sub: "Не лучше других. Лучшие для вас",                     href: "/uslugi-biznesu" },
   { label: "О нас. Контакты",        sub: "Ядро Sales Machine",                                  href: "/o-nas-kontakty" },
+  { label: "404",                    sub: "Страницы нет. Зато есть мухи — сбейте их все",        href: "/404" },
 ];

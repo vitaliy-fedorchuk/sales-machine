@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import PersonNames from "@/components/otzyvy/PersonNames";
 import PreviewVideo from "@/components/otzyvy/PreviewVideo";
 import ReviewActions from "@/components/otzyvy/ReviewActions";
 import type { Review } from "@/lib/pages/otzyvy";
@@ -64,7 +65,9 @@ export default function Graduates({ reviews }: { reviews: readonly Review[] }) {
                 <PreviewVideo src={r.preview} poster={r.poster} className={styles.video} />
               </button>
               <div className={styles.who}>
-                <h3 className={styles.name}>{r.name}</h3>
+                <h3 className={styles.name}>
+                  <PersonNames name={r.name} />
+                </h3>
                 <p className={styles.role}>{r.role}</p>
               </div>
             </div>

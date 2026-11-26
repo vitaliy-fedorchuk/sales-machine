@@ -23,6 +23,20 @@ type Props = { items: readonly Direction[] };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+// Пункт, з якого пішли на сторінку: після «Назад» стрічка стає на нього ж (в межах вкладки).
+const MEMO_KEY = "sm:spiral-item";
+const readMemo = (n: number) => {
+  try {
+    const v = Number(sessionStorage.getItem(MEMO_KEY));
+    return Number.isInteger(v) && v >= 0 && v < n ? v : 0;
+  } catch {
+    return 0;
+  }
+};
+const writeMemo = (i: number) => {
+  try { sessionStorage.setItem(MEMO_KEY, String(i)); } catch {}
+};
+
 export default function Spiral({ items }: Props) {
   const router = useRouter();
   const stageRef = useRef<HTMLDivElement>(null);
@@ -87,6 +101,7 @@ export default function Spiral({ items }: Props) {
     let cur = 0;
     let target = 0;
     let lastInput = 0;
+    let leaving = false; // клікнули пункт — запам'ятали саме його, а не той, що в фокусі
     let snapped = true;
     let dragging = false;
 
@@ -122,7 +137,8 @@ export default function Spiral({ items }: Props) {
     }
 
     measure();
-    cur = target = centerForItem(0, 0, lay, fy).pos;
+    const startIdx = readMemo(items.length);
+    cur = target = centerForItem(startIdx, 0, lay, fy).pos;
     snapped = true;
     info.style.visibility = "visible";
     // після підвантаження шрифту ширини рядків інші — переміряти
@@ -193,7 +209,11 @@ export default function Spiral({ items }: Props) {
       stage.classList.remove(styles.dragging);
       if (moved < 6) {
         const i = itemAt(e.clientX, e.clientY);
-        if (i >= 0 && !transitionTo(items[i].href)) router.push(items[i].href);
+        if (i >= 0) {
+          leaving = true;
+          writeMemo(i);
+          if (!transitionTo(items[i].href)) router.push(items[i].href);
+        }
         return;
       }
       if (performance.now() - lastMoveT < 80) target += vel * cfg.inertia * cfg.dir;
@@ -239,6 +259,12 @@ export default function Spiral({ items }: Props) {
       snapped = true;
     };
     const onNavBlur = () => { focusKey = null; };
+    const onNavClick = (e: MouseEvent) => {
+      const a = (e.target as HTMLElement).closest<HTMLElement>("[data-i]");
+      if (!a) return;
+      leaving = true;
+      writeMemo(Number(a.dataset.i));
+    };
 
     const onResize = () => measure();
 
@@ -274,7 +300,8 @@ export default function Spiral({ items }: Props) {
     const hl = new Map<string, number>();
     let dimMix = 0;
     let themeMix = root.dataset.theme === "dark" ? 1 : 0;
-    let activeIdx = 0;
+    let activeIdx = startIdx;
+    let nearestIdx = startIdx; // пункт у зоні фокусу (без урахування наведення)
     let lastT = 0;
     let raf = 0;
 
@@ -288,6 +315,10 @@ export default function Spiral({ items }: Props) {
         el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: "ease-out" });
       }
     };
+
+    // стартовий пункт (після «Назад») — підпис без анімації
+    infoNum.textContent = `${pad(startIdx + 1)} / ${pad(items.length)}`;
+    infoSub.textContent = items[startIdx].sub;
 
     function frame(now: number) {
       raf = requestAnimationFrame(frame);
@@ -392,6 +423,7 @@ export default function Spiral({ items }: Props) {
       for (let j = n; j < pool.length; j++) show(pool[j], false);
       for (let j = nn; j < numPool.length; j++) show(numPool[j], false);
 
+      nearestIdx = bestI;
       // інфоблок іде за наведеним пунктом
       if (hoverKey) bestI = Number(hoverKey.slice(hoverKey.indexOf("_") + 1));
       if (bestI !== activeIdx) {
@@ -414,6 +446,7 @@ export default function Spiral({ items }: Props) {
     stage.addEventListener("pointercancel", onPointerCancel);
     nav.addEventListener("focusin", onNavFocus);
     nav.addEventListener("focusout", onNavBlur);
+    nav.addEventListener("click", onNavClick);
     document.addEventListener("visibilitychange", onVisibility);
     if (!document.hidden) start();
 
@@ -429,6 +462,9 @@ export default function Spiral({ items }: Props) {
       stage.removeEventListener("pointercancel", onPointerCancel);
       nav.removeEventListener("focusin", onNavFocus);
       nav.removeEventListener("focusout", onNavBlur);
+      nav.removeEventListener("click", onNavClick);
+      // пішли не кліком по пункту (лого, «Назад» браузера) — запам'ятати пункт у фокусі
+      if (!leaving) writeMemo(nearestIdx);
       document.removeEventListener("visibilitychange", onVisibility);
       track.replaceChildren();
       nums.replaceChildren();

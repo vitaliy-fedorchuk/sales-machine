@@ -50,6 +50,10 @@ export async function sendLead(_prev: LeadState, form: FormData): Promise<LeadSt
     const v = clean(form.get(key));
     if (v) lines.push(`${label}: ${v}`);
   }
+  const page = clean(form.get("page"));
+  if (page) lines.push(`Страница: ${page}`);
+  const site = process.env.SITE_URL?.replace(/\/$/, "");
+  if (site) lines.push(`Все заявки: ${site}/admin/leads`);
   const text = lines.join("\n");
 
   const token = process.env.TELEGRAM_BOT_TOKEN;

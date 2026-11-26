@@ -24,5 +24,7 @@ export type SeedCase = {
   cover?: SeedImage;
   cta?: string;
   publishedAt: string;
+  /** Позначити в адмінці «На проверке» — текст перенесено автоматично */
+  needsReview?: boolean;
   blocks: SeedBlock[];
 };

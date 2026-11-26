@@ -9,13 +9,6 @@ import grid from "./keysy.module.css";
 import styles from "./CaseSections.module.css";
 
 const pad = (n: number) => String(n).padStart(2, "0");
-// 1 кейс, 2–4 кейса, 5+ кейсов (і 11–14 — кейсов)
-const plural = (n: number) => {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return "кейс";
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return "кейса";
-  return "кейсов";
-};
 
 // Кожен кейс — один раз, у своїй першій категорії (інші видно в підписі картки).
 const groupsOf = (cases: readonly Case[]) =>
@@ -23,7 +16,7 @@ const groupsOf = (cases: readonly Case[]) =>
 
 /**
  * Кейси без фільтра: згруповані розділами на осі (02 Маркетинг, 03 Креатив …),
- * ліворуч — липкий зміст з кількістю кейсів: клік плавно веде до розділу, поточний підсвічується.
+ * ліворуч — липкий зміст: клік плавно веде до розділу, поточний підсвічується.
  */
 export default function CaseSections({ cases }: { cases: readonly Case[] }) {
   const GROUPS = useMemo(() => groupsOf(cases), [cases]);
@@ -55,7 +48,7 @@ export default function CaseSections({ cases }: { cases: readonly Case[] }) {
       <nav className={styles.index} aria-label="Категории кейсов">
         <span className={styles.indexHead}>Категории</span>
         <ol className={styles.indexList}>
-          {GROUPS.map((g, i) => (
+          {GROUPS.map((g) => (
             <li key={g.id}>
               <button
                 type="button"
@@ -63,11 +56,7 @@ export default function CaseSections({ cases }: { cases: readonly Case[] }) {
                 aria-current={active === g.id ? "true" : undefined}
                 onClick={() => go(g.id)}
               >
-                <span className={styles.indexNum}>{pad(i + 1)}</span>
                 <span className={styles.indexLabel}>{g.label}</span>
-                <span className={styles.badge} aria-label={`${g.items.length} ${plural(g.items.length)}`}>
-                  {g.items.length}
-                </span>
               </button>
             </li>
           ))}
@@ -87,10 +76,6 @@ export default function CaseSections({ cases }: { cases: readonly Case[] }) {
               <h2 id={`cat-${g.id}`} className={page.h2} data-axis-mark={pad(i + 2)} data-twist>
                 {g.label}
               </h2>
-              <span className={styles.headCount}>
-                <span className={styles.badge}>{g.items.length}</span>
-                {plural(g.items.length)}
-              </span>
             </div>
             <ul className={`${grid.grid} ${styles.grid}`}>
               {g.items.map((it) => (

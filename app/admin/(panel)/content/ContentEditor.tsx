@@ -95,19 +95,24 @@ function SortableItem({
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id });
   const hasError = Object.keys(errors).some((k) => k.startsWith(`${path}.${index}.`));
   const sub = f.subtitle ? String(item[f.subtitle] ?? "") : "";
+  const badgeField = f.badge ? f.fields.find((x) => x.key === f.badge) : undefined;
+  const badge =
+    badgeField?.kind === "select" ? badgeField.options.find((o) => o.value === item[f.badge!])?.label.split(" —")[0] : undefined;
   return (
     <section
       ref={setNodeRef}
       className={`${a.block} ${isDragging ? a.blockDragging : ""} ${hasError ? a.blockHasError : ""}`}
       style={{ transform: CSS.Translate.toString(transform), transition }}
     >
-      <header className={a.blockHead}>
-        <button type="button" ref={setActivatorNodeRef} className={a.handle} title="Перетащить" {...attributes} {...listeners}>
+      {/* мишкою тягнути можна за весь рядок; з клавіатури — за ручку */}
+      <header className={`${a.blockHead} ${a.dragHead}`} onPointerDown={listeners?.onPointerDown as React.PointerEventHandler | undefined}>
+        <button type="button" ref={setActivatorNodeRef} className={a.handle} title="Перетащить" {...attributes} onKeyDown={listeners?.onKeyDown as React.KeyboardEventHandler | undefined}>
           <Icon name="grip" />
         </button>
         <button type="button" className={a.itemToggle} onClick={onToggle} aria-expanded={open}>
           <span className={a.blockNum}>{String(index + 1).padStart(2, "0")}</span>
           <span className={a.itemTitle}>{itemTitle(f, item)}</span>
+          {badge && <span className={a.itemBadge}>{badge}</span>}
           {sub && <span className={a.itemSub}>{sub}</span>}
           <span className={a.itemChevron} aria-hidden="true">{open ? "▴" : "▾"}</span>
         </button>

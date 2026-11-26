@@ -21,6 +21,14 @@ const refreshSite = (...slugs: (string | undefined)[]) => {
   revalidatePath("/keysy");
 };
 
+/** «Проверено»: зняти позначку «На проверке» (або повернути її) */
+export async function setCaseReviewed(id: string, reviewed: boolean) {
+  await requireUser();
+  await db.case.update({ where: { id }, data: { needsReview: !reviewed } });
+  revalidatePath("/admin/cases");
+  revalidatePath(`/admin/cases/${id}`);
+}
+
 /** «Новый кейс»: порожня чернетка → одразу в редактор */
 export async function createCase() {
   const user = await requireUser();

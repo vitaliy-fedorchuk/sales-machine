@@ -9,6 +9,8 @@ import { db } from "../db";
 
 export type ContentSaveResult = { ok: true; updatedAt: string } | { ok: false; errors: { path: string; message: string }[] };
 
+const ADMIN_ONLY = new Set(["code"]);
+
 const refresh = (paths: readonly string[]) => {
   for (const p of paths) {
     if (p === "layout") revalidatePath("/", "layout");
@@ -21,6 +23,10 @@ export async function saveContent(key: string, data: unknown): Promise<ContentSa
   const user = await requireUser();
   const def = contentDef(key);
   if (!def) return { ok: false, errors: [{ path: "", message: "Раздел не найден" }] };
+  // Код на сайті = довільні скрипти на всіх сторінках — лише адміністратор
+  if (ADMIN_ONLY.has(key) && user.role !== "ADMIN") {
+    return { ok: false, errors: [{ path: "", message: "Этот раздел может менять только администратор" }] };
+  }
 
   const parsed = objectSchema(def.fields).safeParse(data);
   if (!parsed.success) {
@@ -41,9 +47,10 @@ export async function saveContent(key: string, data: unknown): Promise<ContentSa
 
 /** Вернуть тексты из кода (удалить сохранённую версию) */
 export async function resetContent(key: string) {
-  await requireUser();
+  const user = await requireUser();
   const def = contentDef(key);
   if (!def) return;
+  if (ADMIN_ONLY.has(key) && user.role !== "ADMIN") return;
   await db.content.delete({ where: { key } }).catch(() => {});
   refresh(def.paths);
 }

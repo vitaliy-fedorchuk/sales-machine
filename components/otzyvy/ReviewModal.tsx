@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { getLenis } from "@/components/inner/SmoothScroll";
 import { playerUrl, type Review } from "@/lib/pages/otzyvy";
+import PersonNames from "./PersonNames";
 import ReviewActions from "./ReviewActions";
 import styles from "./ReviewModal.module.css";
 
@@ -55,7 +56,9 @@ export default function ReviewModal({ review, onClose }: { review: Review | null
           <div className={styles.info}>
             <div className={styles.who}>
               <span className={styles.num}>{review.id} / отзыв</span>
-              <h3 className={styles.name}>{review.name}</h3>
+              <h3 className={styles.name}>
+                <PersonNames name={review.name} />
+              </h3>
               <p className={styles.role}>{review.role}</p>
             </div>
             <div className={styles.body}>

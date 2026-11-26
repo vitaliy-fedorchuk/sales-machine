@@ -103,10 +103,10 @@
 
 .text {
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: 1.0625rem;
   font-style: italic;
   line-height: 1.5;
-  color: color-mix(in srgb, var(--ink) 78%, var(--bg));
+  color: color-mix(in srgb, var(--ink) 90%, var(--bg));
 }
 
 .video {

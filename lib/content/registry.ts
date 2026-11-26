@@ -485,7 +485,7 @@ export const homeContent = defineContent({
 // ---------- Відеовідгуки: спільні поля для /otzyvy і відгуків випускників курсу ----------
 
 const FORMATS = [
-  { value: "vertical", label: "Вертикальное 9:16 (сторис, шортс)" },
+  { value: "vertical", label: "Сторис — вертикальное 9:16" },
   { value: "wide", label: "Горизонтальное 16:9" },
 ] as const;
 
@@ -551,7 +551,7 @@ export const otzyvyContent = defineContent({
   paths: ["/otzyvy"],
   fields: [
     ...pageHead(),
-    { kind: "list", key: "reviews", label: "Отзывы", item: "отзыв", title: "name", subtitle: "role", addTo: "start", fields: videoReviewFields({ links: true }) },
+    { kind: "list", key: "reviews", label: "Отзывы", item: "отзыв", title: "name", subtitle: "role", badge: "format", addTo: "start", hint: "Порядок на сайте — как здесь. Перетащите отзыв мышкой за строку, чтобы поменять местами.", fields: videoReviewFields({ links: true }) },
   ],
   defaults: {
     word: OTZYVY_PAGE.word,
@@ -795,7 +795,7 @@ export const kursContent = defineContent({
       label: "Отзывы выпускников",
       fields: [
         { kind: "text", key: "title", label: "Заголовок", required: true, max: 120 },
-        { kind: "list", key: "items", label: "Отзывы", item: "отзыв", title: "name", subtitle: "role", addTo: "end", fields: videoReviewFields() },
+        { kind: "list", key: "items", label: "Отзывы", item: "отзыв", title: "name", subtitle: "role", badge: "format", addTo: "end", hint: "Порядок на сайте — как здесь. Перетащите отзыв мышкой за строку, чтобы поменять местами.", fields: videoReviewFields() },
       ],
     },
     {
@@ -919,6 +919,26 @@ export const kursContent = defineContent({
 });
 
 /** Усі розділи — для меню адмінки */
+// ---------- Код аналітики й сторонніх сервісів (GTM, Метрика, пікселі) ----------
+
+export const codeContent = defineContent({
+  key: "code",
+  title: "Код на сайте (аналитика)",
+  group: "Настройки",
+  hint: "Счётчики и пиксели: Google Tag Manager, Яндекс Метрика, VK и т. п. Вставляйте код так, как его даёт сервис. В админке код не выполняется. Сохранять может только администратор.",
+  paths: ["layout"],
+  fields: [
+    { kind: "textarea", key: "head", label: "Код в <head>", rows: 10, max: 20000, hint: "Сюда обычно ставят основной код счётчика (GTM, Метрика)." },
+    { kind: "textarea", key: "bodyStart", label: "Код сразу после <body>", rows: 6, max: 20000, hint: "Например, блок <noscript> от Google Tag Manager." },
+    { kind: "textarea", key: "bodyEnd", label: "Код перед </body>", rows: 6, max: 20000, hint: "Виджеты чатов, коллтрекинг и прочее, что можно грузить последним." },
+  ],
+  defaults: {
+    head: "<!-- Google Tag Manager -->\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n})(window,document,'script','dataLayer','GTM-MVHJ8RJ8');</script>\n<!-- End Google Tag Manager -->",
+    bodyStart: "<!-- Google Tag Manager (noscript) -->\n<noscript><iframe src=\"https://www.googletagmanager.com/ns.html?id=GTM-MVHJ8RJ8\"\nheight=\"0\" width=\"0\" style=\"display:none;visibility:hidden\"></iframe></noscript>\n<!-- End Google Tag Manager (noscript) -->",
+    bodyEnd: "",
+  },
+});
+
 export const CONTENT = [
   homeContent,
   kursContent,
@@ -934,6 +954,7 @@ export const CONTENT = [
   immersiveContent,
   smiContent,
   contactsContent,
+  codeContent,
 ] as const;
 
 export type ContentKey = (typeof CONTENT)[number]["key"];

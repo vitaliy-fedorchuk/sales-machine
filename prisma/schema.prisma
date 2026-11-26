@@ -38,6 +38,8 @@ model Case {
   description String      @default("")
   /// Напис на кнопці внизу; порожньо — «Клик, который поможет бизнесу»
   cta         String?
+  /// Перенесений автоматично (зі старого сайту / сторонніх статей) — треба вичитати; в адмінці позначка «На проверке»
+  needsReview Boolean     @default(false)
   createdBy   User?       @relation("CaseCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   createdById String?
   updatedBy   User?       @relation("CaseUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)

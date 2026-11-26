@@ -33,7 +33,7 @@
 
 .indexItem {
   display: grid;
-  grid-template-columns: 1.625rem 1fr auto;
+  grid-template-columns: 1fr;
   align-items: baseline;
   gap: 0.625rem;
   width: 100%;
@@ -48,11 +48,6 @@
   transition: color 0.35s ease, padding 0.45s cubic-bezier(0.625, 0.05, 0, 1);
 }
 
-.indexNum {
-  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
-  letter-spacing: 0.06em;
-}
-
 .indexLabel {
   font-size: 1.125rem;
   font-weight: 600;
@@ -61,35 +56,6 @@
 
 .indexItem:hover,
 .indexActive {
-  color: var(--ink);
-}
-
-/* Кількість кейсів — квадратний бейдж (на відміну від порядкового номера «01» зліва) */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.5rem;
-  height: 1.5rem;
-  padding: 0 0.3125rem;
-  border: 1px solid currentColor;
-  font: 600 0.75rem/1 var(--font-mono), ui-monospace, monospace;
-  transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
-}
-
-.indexActive .badge {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--bg);
-}
-
-.headCount {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font: 500 0.75rem/1 var(--font-mono), ui-monospace, monospace;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   color: var(--ink);
 }
 
@@ -149,7 +115,7 @@
     border: 0;
   }
   .indexItem {
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto;
     padding: 0.625rem 0.875rem;
     border: 1px solid var(--ink);
     white-space: nowrap;
@@ -158,12 +124,6 @@
     padding-left: 0.875rem;
     background: var(--ink);
     color: var(--bg);
-  }
-  /* на темній активній мітці бейдж інвертований */
-  .indexActive .badge {
-    border-color: var(--bg);
-    background: var(--bg);
-    color: var(--ink);
   }
   .indexLabel {
     font-size: 0.9375rem;

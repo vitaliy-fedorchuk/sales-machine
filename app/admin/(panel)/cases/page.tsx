@@ -15,22 +15,24 @@ const LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label])) as Reco
 const when = (d: Date) =>
   new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(d);
 
-type Filter = "all" | "draft" | "published";
+type Filter = "all" | "draft" | "published" | "review";
 
 export default async function CasesPage({ searchParams }: { searchParams: Promise<{ status?: string; q?: string }> }) {
   await requireUser();
   const sp = await searchParams;
-  const status: Filter = sp.status === "draft" || sp.status === "published" ? sp.status : "all";
+  const status: Filter = sp.status === "draft" || sp.status === "published" || sp.status === "review" ? sp.status : "all";
   const q = (sp.q ?? "").trim().slice(0, 100);
 
   const where: Prisma.CaseWhereInput = {
     ...(status === "draft" && { status: "DRAFT" }),
     ...(status === "published" && { status: "PUBLISHED" }),
+    ...(status === "review" && { needsReview: true }),
     ...(q && { OR: [{ title: { contains: q, mode: "insensitive" } }, { slug: { contains: q, mode: "insensitive" } }] }),
   };
-  const [rows, counts] = await Promise.all([
+  const [rows, counts, toReview] = await Promise.all([
     db.case.findMany({ where, orderBy: { updatedAt: "desc" }, include: { updatedBy: { select: { name: true } } } }),
     db.case.groupBy({ by: ["status"], _count: true }),
+    db.case.count({ where: { needsReview: true } }),
   ]);
   const count = (s: "DRAFT" | "PUBLISHED") => counts.find((c) => c.status === s)?._count ?? 0;
   const now = Date.now();
@@ -59,6 +61,11 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
           <Link href={href("draft")} className={status === "draft" ? a.segOn : ""}>
             Черновики · {count("DRAFT")}
           </Link>
+          {(toReview > 0 || status === "review") && (
+            <Link href={href("review")} className={status === "review" ? a.segOn : ""}>
+              На проверке · {toReview}
+            </Link>
+          )}
         </div>
         <form>
           {status !== "all" && <input type="hidden" name="status" value={status} />}
@@ -83,8 +90,9 @@ export default async function CasesPage({ searchParams }: { searchParams: Promis
             {rows.map((c) => {
               const scheduled = c.status === "PUBLISHED" && c.publishedAt && c.publishedAt.getTime() > now;
               return (
-                <tr key={c.id}>
+                <tr key={c.id} className={c.needsReview ? a.rowReview : undefined}>
                   <td>
+                    {c.needsReview && <span className={`${a.badge} ${a.badgeReview}`}>На проверке</span>}
                     <Link href={`/admin/cases/${c.id}`} className={a.tableTitle}>
                       {c.title || "Без названия"}
                     </Link>

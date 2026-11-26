@@ -37,10 +37,15 @@ import leshchi from "./seed/leshchi";
 import unistroyBitva from "./seed/unistroy-bitva";
 import prHarizmy from "./seed/pr-harizmy";
 import dvizhenie from "./seed/dvizhenie";
+import immersivnyyMarketing from "./seed/immersivnyy-marketing-ot-babushek-do-pornhub";
+import feyki from "./seed/feyki-rulyat-batl-s-brusnikoy";
+import teslaDom from "./seed/tesladom-185-kvartir-za-14-mesyacev";
+import triBilborda from "./seed/3-bilborda-na-granice-batayska";
 import type { SeedAudio, SeedCase, SeedImage } from "./seed/types";
 
 const CASES: SeedCase[] = [kashemirovyyKrab, golosGucci, pereupakovka, europeanPropertyAwards, avtoKungFu, dobryyKot, krasivoModnoVkusno, fundamentalnyeOtcy, richspeys, harizmy, mamino,
-  dvenadtsatKlyuchey, dvenadtsatKlyucheyDizayn, hbStart, hbAvtobusy, hbNewYear, immersivnyyOfis, shtolts, unistroyRk, leshchi, unistroyBitva, prHarizmy, dvizhenie];
+  dvenadtsatKlyuchey, dvenadtsatKlyucheyDizayn, hbStart, hbAvtobusy, hbNewYear, immersivnyyOfis, shtolts, unistroyRk, leshchi, unistroyBitva, prHarizmy, dvizhenie,
+  immersivnyyMarketing, feyki, teslaDom, triBilborda];
 
 const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
 
@@ -103,6 +108,7 @@ async function main() {
         cta: c.cta ?? null,
         status: "PUBLISHED",
         publishedAt: new Date(c.publishedAt),
+        needsReview: c.needsReview ?? false,
         blocks: blocks as Prisma.InputJsonValue,
       },
     });
